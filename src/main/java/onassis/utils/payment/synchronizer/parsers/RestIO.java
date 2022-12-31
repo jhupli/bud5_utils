@@ -82,7 +82,7 @@ public class RestIO {
 
             IOUtils.printOut("ERROR: Failed to lock: " + pId + "\n");
         }
-        IOUtils.printOut( lockResponse + "\n");
+        //IOUtils.printOut( lockResponse + "\n");
     }
 
     void create(P p) {
