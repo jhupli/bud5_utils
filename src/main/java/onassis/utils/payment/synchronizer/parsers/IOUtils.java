@@ -101,7 +101,10 @@ public class IOUtils {
                 }
 
                 for (Line l : m.getReceipt().getLines()) {
-                    writer.write(linePrefix + l.getLine() + "\n");
+
+                    writer.write(((l.getLine().startsWith("***") || l.getLine().startsWith("*>*")) ?
+                            "" : linePrefix)
+                            + l.getLine() + "\n");
                 }
                 writer.close();
         }
