@@ -132,10 +132,10 @@ public class Parser {
             try {
                 switch(m.getState())  {
                     case CREATE :       restIO.create(m.getReceipt().getP(restIO));
-                                        IOUtils.printOut("c ");
+                                        IOUtils.printOut("c.");
                                         break;
                     case MATCH_FOUND:   restIO.lock(m.theChosenP.getId());
-                                        IOUtils.printOut("l ");
+                                        IOUtils.printOut("l.");
                 }
                 writer.writeLog(m);
             } catch (Exception e) {

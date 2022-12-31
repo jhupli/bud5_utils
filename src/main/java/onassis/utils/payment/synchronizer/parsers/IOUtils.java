@@ -93,6 +93,9 @@ public class IOUtils {
                     case MATCH_FOUND:
                         linePrefix = "***";
                         break;
+                    case ATTRS_NOT_FOUND:
+                        linePrefix = "***";
+                        break;
                     default:
                         linePrefix = "";
                 }
@@ -220,7 +223,7 @@ kulmiin?
     public static State pickMatch(Matchable m, int i) {
         showLines(m.getReceipt().getLines().stream().map(l -> {return l.getLine(); }).collect(Collectors.toList()), ""+i+":"+" Receipt " + m.getReceipt().getAmount());
         showP(m.getPInfo());
-        String answer =  ask("Pick a Payment #, c to create new, s to skip, b tobreak ", "scb", 1, m.getPInfo().size());
+        String answer =  ask("Pick a Payment #, c to create new, s to skip, b to break ", "scb", 1, m.getPInfo().size());
         if(answer.equalsIgnoreCase("s")) {
             return State.SKIP;
         }

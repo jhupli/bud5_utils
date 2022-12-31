@@ -21,11 +21,12 @@ public class Main {
             parser.collect(line);
         } while(null != line);
         IOUtils.printOut(" Done\n");
+        IOUtils.dump(args[1]+".after_collect", parser);
         long size = parser.matchables.stream().filter(p -> p.getState().equals(Matchable.State.ALL_ATTRS_FOUND)).count();
         IOUtils.printOut("Preparing " + size + " receipt(s) :\n");
         parser.prepare();
-        IOUtils.dump(args[1], parser);
         IOUtils.printOut("Prepare done. \n");
+        IOUtils.dump(args[1]+".after_prepare", parser);
         IOUtils.printOut("Preparing " + size + " receipt(s) :\n");
         if (IOUtils.askYesNo()) {
             IOUtils.printOut("Updating Onassis: ");

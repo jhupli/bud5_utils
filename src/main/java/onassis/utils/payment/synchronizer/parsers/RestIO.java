@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static com.jayway.restassured.RestAssured.given;
 
@@ -71,16 +72,15 @@ public class RestIO {
         String lockUrl = String.format("http://%s/lock?id=%s&l=true&d=%s", host, pId, nowStr);
         String updateResponse = null, lockResponse = null;
         try {
-            IOUtils.printOut("Locking ... ");
-            IOUtils.printOut("\n" + lockUrl);
+            //IOUtils.printOut("locking ... ");
             lockResponse = ((Response) RestAssured.given().auth().basic(user, pw).when().get(lockUrl, new Object[0])).asString();
             if(lockResponse.length()>0) {
                 throw new RuntimeException(lockResponse);
             }
-            IOUtils.printOut("Locked: " + pId+"\n" );
+            //IOUtils.printOut("Locked: " + pId+"\n" );
         } catch (Exception e) {
 
-            IOUtils.printOut("Failed to lock: " + pId + "\n");
+            IOUtils.printOut("ERROR: Failed to lock: " + pId + "\n");
         }
         IOUtils.printOut( lockResponse + "\n");
     }
@@ -97,17 +97,19 @@ public class RestIO {
         try {
             update(u);
         } catch (Exception e) {
-            IOUtils.printOut("Failed to create: " + p.toString() + "\n");
+            IOUtils.printOut("ERROR: Failed to create: " + p.toString() + "\n");
             throw e;
         }
     }
 
     private void update(OnassisController.Updates upd) {
+        //IOUtils.printOut("Creating ... ");
         String createUrl = String.format("http://%s/payments/update", host);
         String responseJson = ((Response) RestAssured.given().auth().basic(user, pw).contentType("application/json").body(upd).when().post(createUrl)).asString();
         if(responseJson.length()>0) {
             throw new RuntimeException(responseJson);
         }
+        //IOUtils.printOut("created.\n ");
     }
     boolean login() {
         pw = IOUtils.login();
@@ -118,8 +120,9 @@ public class RestIO {
         try {
             String responseJson =
                     given().auth().basic(user, pw).when().get(catUrl).asString();
-            categories = (new Gson()).fromJson(responseJson, new TypeToken<List<C>>() {
+            List<C> categories_ = (new Gson()).fromJson(responseJson, new TypeToken<List<C>>() {
             }.getType());
+            categories = categories_.stream().filter(c -> c.getActive()).collect(Collectors.toList());
         } catch (Exception e) {
             System.out.println(e);
             IOUtils.printOut(" Failed. Category not found.\n");
