@@ -1,9 +1,6 @@
 package onassis.utils.payment.synchronizer.parsers;
 
 import lombok.SneakyThrows;
-import onassis.OnassisController;
-import onassis.dto.P;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.FileReader;
 import java.text.SimpleDateFormat;
@@ -12,7 +9,6 @@ import java.util.stream.Stream;
 
 import static java.lang.Runtime.getRuntime;
 import static onassis.utils.payment.synchronizer.parsers.Matchable.State.ALL_ATTRS_FOUND;
-import static onassis.utils.payment.synchronizer.parsers.Matchable.State.CREATE;
 
 
 public class Parser {
