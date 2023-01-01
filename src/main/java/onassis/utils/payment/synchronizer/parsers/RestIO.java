@@ -71,7 +71,7 @@ public class RestIO {
     void lock(int pId) {
         String lockUrl = String.format("http://%s/lock?id=%s&l=true&d=%s", host, pId, nowStr);
         String updateResponse = null, lockResponse = null;
-        /*try {
+        try {
             lockResponse = ((Response) RestAssured.given().auth().basic(user, pw).when().get(lockUrl, new Object[0])).asString();
             if(lockResponse.length()>0) {
                 throw new RuntimeException(lockResponse);
@@ -79,7 +79,7 @@ public class RestIO {
         } catch (Exception e) {
 
             IOUtils.printOut("ERROR: Failed to lock: " + pId + "\n");
-        }*/
+        }
     }
 
     void create(P p) {
@@ -100,11 +100,11 @@ public class RestIO {
     }
 
     private void update(OnassisController.Updates upd) {
-        /*String createUrl = String.format("http://%s/payments/update", host);
+        String createUrl = String.format("http://%s/payments/update", host);
         String responseJson = ((Response) RestAssured.given().auth().basic(user, pw).contentType("application/json").body(upd).when().post(createUrl)).asString();
         if(responseJson.length()>0) {
             throw new RuntimeException(responseJson);
-        }*/
+        }
     }
     boolean login() {
         pw = IOUtils.login();
