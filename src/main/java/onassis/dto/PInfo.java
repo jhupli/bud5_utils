@@ -6,13 +6,15 @@ import java.util.Date;
 public class PInfo {
 	Integer id;
 	Date dc;
-    Date d;
-    BigDecimal i;
-    String c_descr;
-    String a_descr;
+	Date d;
+	BigDecimal i;
+	String c_descr;
+	String a_descr;
 	String descr;
 
-    public PInfo(Integer id, Date dc, Date d, BigDecimal i, String c_descr, String a_descr, String descr) {
+	boolean locked;
+
+	public PInfo(Integer id, Date dc, Date d, BigDecimal i, String c_descr, String a_descr, String descr, boolean locked) {
 		super();
 		this.id = id;
 		this.dc = dc;
@@ -21,6 +23,7 @@ public class PInfo {
 		this.c_descr = c_descr;
 		this.a_descr = a_descr;
 		this.descr = descr;
+		this.locked = locked;
 	}
 
 	public Integer getId() {
@@ -79,6 +82,14 @@ public class PInfo {
 		this.descr = descr;
 	}
 
+	public boolean isLocked() {
+		return locked;
+	}
+
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+	}
+
 	@Override
 	public String toString() {
 		return "PInfo{" +
@@ -89,6 +100,7 @@ public class PInfo {
 				", c_descr='" + c_descr + '\'' +
 				", a_descr='" + a_descr + '\'' +
 				", descr='" + descr + '\'' +
+				"  locked=" + locked +
 				'}';
 	}
 }

@@ -96,14 +96,12 @@ public class Parser {
 
     public void collect(String str) {
 
-        if (null == str || parsers.get(Target.BEGIN).match(str)) {
+        if (parsers.get(Target.BEGIN).match(str)) {
             m = new Matchable(restIO);
             matchables.add(m);
-            IOUtils.printOut(".");
+            IOUtils.printOut("."); //one receipt parsed
         }
-        if (null != str) {
-            m.collect(str);
-        }
+        m.collect(str);
     }
 
     final private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");

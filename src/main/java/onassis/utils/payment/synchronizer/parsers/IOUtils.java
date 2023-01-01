@@ -33,11 +33,11 @@ public class IOUtils {
         }
     }
 
-    /*private static boolean debugmode=false;
-
-    public static boolean isDebugmode() {
-        return debugmode;
-    }*/
+    public static void writeRawLog(String s, String statementFileName) throws  Exception{
+        BufferedWriter writer = new BufferedWriter(new FileWriter(statementFileName + ".onassis", true));
+        writer.write(s +"\n");
+        writer.close();
+    }
 
     public static class StatementReader{
         Scanner scan;
@@ -87,6 +87,7 @@ public class IOUtils {
                     case CREATE:
                         linePrefix = "*>*";
                         break;
+                    case MATCH_FOUND_ALREADY_LOCKED:
                     case MATCH_FOUND:
                         linePrefix = "***";
                         break;
@@ -98,10 +99,7 @@ public class IOUtils {
                 }
 
                 for (Line l : m.getReceipt().getLines()) {
-
-                    writer.write(((l.getLine().startsWith("***") || l.getLine().startsWith("*>*")) ?
-                            "" : linePrefix)
-                            + l.getLine() + "\n");
+                    writer.write( linePrefix + l.getLine() + "\n");
                 }
                 writer.close();
         }
@@ -235,9 +233,14 @@ kulmiin?
         if(answer.equals(CREATE_KEY)) {
             return State.CREATE;
         } else {
-            m.setTheChosenP(m.getPInfo().get(Integer.parseInt(answer) - 1));
+            PInfo pInfo = m.getPInfo().get(Integer.parseInt(answer) - 1);
+            m.setTheChosenP(pInfo);
+
+            if (pInfo.isLocked()) {
+                return State.MATCH_FOUND_ALREADY_LOCKED;
+            }
+            return State.MATCH_FOUND;
         }
-        return State.MATCH_FOUND;
     }
 
     static String pickDescription(String defaultDesc) {

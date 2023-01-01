@@ -71,18 +71,15 @@ public class RestIO {
     void lock(int pId) {
         String lockUrl = String.format("http://%s/lock?id=%s&l=true&d=%s", host, pId, nowStr);
         String updateResponse = null, lockResponse = null;
-        try {
-            //IOUtils.printOut("locking ... ");
+        /*try {
             lockResponse = ((Response) RestAssured.given().auth().basic(user, pw).when().get(lockUrl, new Object[0])).asString();
             if(lockResponse.length()>0) {
                 throw new RuntimeException(lockResponse);
             }
-            //IOUtils.printOut("Locked: " + pId+"\n" );
         } catch (Exception e) {
 
             IOUtils.printOut("ERROR: Failed to lock: " + pId + "\n");
-        }
-        //IOUtils.printOut( lockResponse + "\n");
+        }*/
     }
 
     void create(P p) {
@@ -103,13 +100,11 @@ public class RestIO {
     }
 
     private void update(OnassisController.Updates upd) {
-        //IOUtils.printOut("Creating ... ");
-        String createUrl = String.format("http://%s/payments/update", host);
+        /*String createUrl = String.format("http://%s/payments/update", host);
         String responseJson = ((Response) RestAssured.given().auth().basic(user, pw).contentType("application/json").body(upd).when().post(createUrl)).asString();
         if(responseJson.length()>0) {
             throw new RuntimeException(responseJson);
-        }
-        //IOUtils.printOut("created.\n ");
+        }*/
     }
     boolean login() {
         pw = IOUtils.login();
@@ -163,7 +158,6 @@ public class RestIO {
         List<PInfo> pInfos = null;
         String url = String.format("http://%s/info?d=%s&i=%s&a=%s", this.host, receipt.getDateString(), receipt.getAmount(), this.account);
         receipt.setUrl(url);
-        //return null;
         String responseJson = ((Response) RestAssured.given().auth().basic(this.user, this.pw).when().get(url, new Object[0])).asString();
         List<PInfo> Infos = (new Gson()).fromJson(responseJson, new TypeToken<List<PInfo>>() {
         }.getType());

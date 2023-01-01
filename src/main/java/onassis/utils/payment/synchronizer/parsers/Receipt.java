@@ -61,7 +61,7 @@ public class Receipt {
         if(!hasItAll()) {
             return null;
         }
-        return new PInfo(null, getDate(), getDate(), getAmount(), null, RestIO.getAccount(), getDescription());
+        return new PInfo(null, getDate(), getDate(), getAmount(), null, RestIO.getAccount(), getDescription(), true);
     //PInfo(Integer id, Date dc, Date d,       BigDecimal i, String c_descr, String a_descr, String descr) {
     }
 

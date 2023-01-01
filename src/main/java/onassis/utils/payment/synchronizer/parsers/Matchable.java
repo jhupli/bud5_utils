@@ -13,18 +13,19 @@ import java.util.stream.Collectors;
 
 public class Matchable {
     public enum State {
-        NEW,
         ATTRS_NOT_FOUND,
         ALL_ATTRS_FOUND,
         SKIP,
         BREAK,
         MATCH_FOUND,
+
+        MATCH_FOUND_ALREADY_LOCKED,
         CREATE,
         ERROR,
     }
 
     @Getter
-    private State state = State.NEW;
+    private State state = State.ATTRS_NOT_FOUND;
     @Getter
     private List<PInfo> pInfo;
     @Getter
@@ -59,7 +60,7 @@ public class Matchable {
         if(state.equals(State.BREAK)){
             breaked = true;
         }
-        if(state.equals(State.MATCH_FOUND)) {
+        if(state.equals(State.MATCH_FOUND) || state.equals(State.MATCH_FOUND_ALREADY_LOCKED)) {
             blackList.add(theChosenP.getId());
         } else if(state.equals(State.CREATE)) {
             receipt.chosenCategory = IOUtils.pickCategory(restIO.getCategories()).getId();
@@ -68,9 +69,8 @@ public class Matchable {
     }
 
     public void collect(String str) {
-        state = State.ATTRS_NOT_FOUND;
         receipt.collect(str);
-        if(receipt.hasItAll()) {
+        if(receipt.hasItAll() && state.equals(State.ATTRS_NOT_FOUND)) {
             state = State.ALL_ATTRS_FOUND;
             pInfo = restIO.getPCandidates(receipt);
             pInfo.add(receipt.getPseudoP());

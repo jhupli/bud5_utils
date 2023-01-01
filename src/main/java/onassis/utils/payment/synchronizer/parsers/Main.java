@@ -18,7 +18,12 @@ public class Main {
         IOUtils.printOut("Collecting ..");
         do {
             line = statements.getLine();
-            parser.collect(line);
+            if(null == line) break;
+            if(line.startsWith("***") || line.startsWith("*>*")) {
+                IOUtils.writeRawLog(line, args[1]);
+            } else {
+                parser.collect(line);
+            }
         } while(null != line);
         IOUtils.printOut(" Done\n");
         IOUtils.dump(args[1]+".after_collect", parser);
