@@ -164,7 +164,16 @@ kulmiin?
                 (new Column()).minWidth(15).maxWidth(15, OverflowBehaviour.ELLIPSIS_RIGHT).headerAlign(HorizontalAlign.CENTER)
                         .dataAlign(HorizontalAlign.CENTER)
                         .header("Category").with((p) -> { return i++ != pInfoList.size() - 1 ? p.getC_descr() : "-"; }),
-                (new Column()).minWidth(LINELENGTH - 5 -12 - 15).maxWidth(LINELENGTH - 5 -12 - 15, OverflowBehaviour.ELLIPSIS_RIGHT).headerAlign(HorizontalAlign.CENTER)
+
+                (new Column()).minWidth(15).maxWidth(15, OverflowBehaviour.ELLIPSIS_RIGHT).headerAlign(HorizontalAlign.CENTER)
+                        .dataAlign(HorizontalAlign.CENTER)
+                        .header("Category").with((p) -> { return i++ != pInfoList.size() - 1 ? p.getC_descr() : "-"; }),
+
+                (new Column()).minWidth(3).maxWidth(3, OverflowBehaviour.ELLIPSIS_RIGHT).headerAlign(HorizontalAlign.CENTER)
+                        .dataAlign(HorizontalAlign.CENTER)
+                        .header("L").with((p) -> { return i++ != pInfoList.size() - 1 ? (p.isLocked() ? "*" : "" ) : "*"; }),
+
+                (new Column()).minWidth(LINELENGTH - 5 - 12 - 15 - 3).maxWidth(LINELENGTH - 5 -12 - 15, OverflowBehaviour.ELLIPSIS_RIGHT).headerAlign(HorizontalAlign.CENTER)
                         .dataAlign(HorizontalAlign.CENTER)
                         .header("Description").with((p) -> { return "" + p.getDescr(); })
         )));
