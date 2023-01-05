@@ -45,7 +45,7 @@ public class P {
 		this.a = a;
 		this.s = s;
 		this.g = g;
-		this.descr = descr;
+		this.descr = descr.substring(1,50);
 		this.l = l;
 	}
 
