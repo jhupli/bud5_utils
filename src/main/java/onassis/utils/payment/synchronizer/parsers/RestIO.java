@@ -68,8 +68,8 @@ public class RestIO {
     }
 
 
-    void lock(int pId) {
-        String lockUrl = String.format("http://%s/lock?id=%s&l=true&d=%s", host, pId, nowStr);
+    void lock(int pId, Date date) {
+        String lockUrl = String.format("http://%s/lock?id=%s&l=true&d=%s", host, pId, dateFormat.format(date));
         String updateResponse = null, lockResponse = null;
         try {
             lockResponse = ((Response) RestAssured.given().auth().basic(user, pw).when().get(lockUrl, new Object[0])).asString();
@@ -85,7 +85,7 @@ public class RestIO {
     void create(P p) {
         OnassisController.Updates u = new OnassisController.Updates();
         List<P> pList = new ArrayList<>();
-        p.setD(now);
+        //p.setD(now);
         p.setG(Parser.gId);
         pList.add(p);
         u.setCreated(pList);

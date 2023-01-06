@@ -104,7 +104,7 @@ public class Parser {
         m.collect(str);
     }
 
-    final private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+    final public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
     public void prepare() {
 
@@ -128,7 +128,7 @@ public class Parser {
                     case CREATE :       restIO.create(m.getReceipt().getP(restIO));
                                         IOUtils.printOut("c.");
                                         break;
-                    case MATCH_FOUND:   restIO.lock(m.theChosenP.getId());
+                    case MATCH_FOUND:   restIO.lock(m.theChosenP.getId(), m.getReceipt().getDate());
                                         IOUtils.printOut("l.");
                 }
                 writer.writeLog(m);
