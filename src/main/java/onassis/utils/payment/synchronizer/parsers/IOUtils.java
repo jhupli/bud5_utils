@@ -160,7 +160,7 @@ kulmiin?
                         .header("#").with((p) -> { return i != pInfoList.size() - 1 ? "" + (i+1) : CREATE_KEY; }),
                 (new Column()).minWidth(12).maxWidth(12).headerAlign(HorizontalAlign.CENTER)
                         .dataAlign(HorizontalAlign.LEFT)
-                        .header("Date").with((p) -> { return new SimpleDateFormat("dd.MM.yyyy").format(p.getD());}),
+                        .header("Date").with((p) -> { return new SimpleDateFormat("dd.MM.yyyy").format(p.getDc());}),
                 (new Column()).minWidth(15).maxWidth(15, OverflowBehaviour.ELLIPSIS_RIGHT).headerAlign(HorizontalAlign.CENTER)
                         .dataAlign(HorizontalAlign.CENTER)
                         .header("Category").with((p) -> { return i != pInfoList.size() - 1 ? p.getC_descr() : "-"; }),
