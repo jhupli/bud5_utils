@@ -69,7 +69,16 @@ public class Receipt {
         if(!hasItAll()) {
             return null;
         }
-        return new P(null, getDate(), getDate(), getAmount(), Integer.parseInt("" + chosenCategory) , RestIO.getAccountId(), true, "TODO", description, true);
+        return new P(null,
+                getDate(),
+                getDate(),
+                getAmount(),
+                Integer.parseInt("" + chosenCategory),
+                RestIO.getAccountId(),
+                true,
+                "TODO",
+                description,
+                true);
     }
 
     public void collect(String str) {

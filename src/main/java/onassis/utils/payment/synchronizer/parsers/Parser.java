@@ -124,14 +124,15 @@ public class Parser {
         IOUtils.StatementWriter writer = new IOUtils.StatementWriter(baseFileName);
 
         for(Matchable m : matchables) {
-
             try {
                 switch(m.getState())  {
                     case CREATE :       restIO.create(m.getReceipt().getP(restIO));
-                                        IOUtils.printOut("c.");
+                                        IOUtils.printOut("c");
                                         break;
                     case MATCH_FOUND:   restIO.lock(m.theChosenP.getId(), m.getReceipt().getDate());
-                                        IOUtils.printOut("l.");
+                                        IOUtils.printOut("l");
+                                        break;
+                    case SKIP:          IOUtils.printOut("s");
                 }
             } catch (Exception e) {
                 IOUtils.printOut("ERROR: something went wrong updating!\n");
