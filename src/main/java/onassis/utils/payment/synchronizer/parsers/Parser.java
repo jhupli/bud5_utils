@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import static java.lang.Runtime.getRuntime;
 import static onassis.utils.payment.synchronizer.parsers.Matchable.State.ALL_ATTRS_FOUND;
+import static onassis.utils.payment.synchronizer.parsers.Matchable.State.SKIP;
 
 
 public class Parser {
@@ -117,7 +118,8 @@ public class Parser {
         gId = "_" +  restIO.newGroupId() + "_"  + dateFormat.format(new Date());
         IOUtils.printOut(" Done.\nNewly created will have group-id : '" + gId + "'\n");
     }
-
+    int errorNr = 1;
+    @SneakyThrows
     public void update(String baseFileName) {
         IOUtils.StatementWriter writer = new IOUtils.StatementWriter(baseFileName);
 
@@ -131,15 +133,15 @@ public class Parser {
                     case MATCH_FOUND:   restIO.lock(m.theChosenP.getId(), m.getReceipt().getDate());
                                         IOUtils.printOut("l.");
                 }
-                writer.writeLog(m);
             } catch (Exception e) {
-                IOUtils.printOut("ERROR: something went wrong updating: \n"+m+"\n");
-                throw new RuntimeException(e);
+                IOUtils.printOut("ERROR: something went wrong updating!\n");
+                IOUtils.dumpErrorFile(baseFileName,e,m);
+                IOUtils.printOut("Skipping this update. Continuing ..\n");
+                m.setState(SKIP);
             }
+            writer.writeLog(m);
         }
-
         return;
-
     }
 
     @Override

@@ -226,7 +226,21 @@ kulmiin?
         writer.close();
         printOut(" Done.\n");
     }
-
+    static int errorNro = 1;
+    public static void dumpErrorFile(String baseFileName, Exception e, Matchable m) throws IOException {
+        String fileName = baseFileName + ".error." + (errorNro++) + ".debug";
+        printOut("Writing " + fileName + " ..");
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+        writer.write(e + "\n");
+        writer.write("-------------------------------------\n");
+        for(Line l : m.getReceipt().getLines()) {
+            writer.write(l.getLine() + "\n");
+        }
+        writer.write("-------------------------------------\n");
+        writer.write(m + "\n");
+        writer.close();
+        printOut(" Done.\n");
+    }
     public static State pickMatch(Matchable m, int i) {
         showLines(m.getReceipt().getLines().stream().map(l -> {return l.getLine(); }).collect(Collectors.toList()), ""+i+":"+" Receipt " + m.getReceipt().getAmount());
         showP(m.getPInfo());

@@ -3,6 +3,7 @@ package onassis.utils.payment.synchronizer.parsers;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.response.Header;
 import com.jayway.restassured.response.Response;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -72,7 +73,8 @@ public class RestIO {
         String lockUrl = String.format("http://%s/lock?id=%s&l=true&d=%s", host, pId, dateFormat.format(date));
         String updateResponse = null, lockResponse = null;
         try {
-            lockResponse = ((Response) RestAssured.given().auth().basic(user, pw).when().get(lockUrl, new Object[0])).asString();
+
+            lockResponse = ((Response) RestAssured.given().auth().basic(user, pw).header("Content-Type","application/json;charset=UTF-8").when().get(lockUrl, new Object[0])).asString();
             if(lockResponse.length()>0) {
                 throw new RuntimeException(lockResponse);
             }
@@ -101,7 +103,7 @@ public class RestIO {
 
     private void update(OnassisController.Updates upd) {
         String createUrl = String.format("http://%s/payments/update", host);
-        String responseJson = ((Response) RestAssured.given().auth().basic(user, pw).contentType("application/json").body(upd).when().post(createUrl)).asString();
+        String responseJson = ((Response) RestAssured.given().auth().basic(user, pw).header("Content-Type","application/json;charset=UTF-8").contentType("application/json").body(upd).when().post(createUrl)).asString();
         if(responseJson.length()>0) {
             throw new RuntimeException(responseJson);
         }
@@ -114,7 +116,7 @@ public class RestIO {
 
         try {
             String responseJson =
-                    given().auth().basic(user, pw).when().get(catUrl).asString();
+                    given().auth().basic(user, pw).header("Content-Type","application/json;charset=UTF-8").when().get(catUrl).asString();
             List<C> categories_ = (new Gson()).fromJson(responseJson, new TypeToken<List<C>>() {
             }.getType());
             categories = categories_.stream().filter(c -> c.getActive()).collect(Collectors.toList());
@@ -126,7 +128,7 @@ public class RestIO {
 
         try {
             String responseJson =
-                    given().auth().basic(user, pw).when().get(accUrl).asString();
+                    given().auth().basic(user, pw).header("Content-Type","application/json;charset=UTF-8").when().get(accUrl).asString();
             accounts = (new Gson()).fromJson(responseJson, new TypeToken<List<A>>() {
             }.getType());
 
@@ -146,7 +148,7 @@ public class RestIO {
         String url = "http://" + host + "/group/newid";
         try {
             String groupId =
-                    given().auth().basic(user, pw).when().get(url).asString();
+                    given().auth().basic(user, pw).header("Content-Type","application/json;charset=UTF-8").when().get(url).asString();
             return groupId;
         } catch (Exception e) {
             IOUtils.printOut("Unable to create new group id.\n");

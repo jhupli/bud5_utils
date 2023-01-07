@@ -25,6 +25,7 @@ public class Matchable {
     }
 
     @Getter
+    @Setter
     private State state = State.ATTRS_NOT_FOUND;
     @Getter
     private List<PInfo> pInfo;
