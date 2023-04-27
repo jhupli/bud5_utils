@@ -57,6 +57,7 @@ public class Matchable {
             state = State.BREAK;
             return;
         }
+
         state = IOUtils.pickMatch(this, ix++);
         if(state.equals(State.BREAK)){
             breaked = true;
@@ -64,8 +65,19 @@ public class Matchable {
         if(state.equals(State.MATCH_FOUND) || state.equals(State.MATCH_FOUND_ALREADY_LOCKED)) {
             blackList.add(theChosenP.getId());
         } else if(state.equals(State.CREATE)) {
-            receipt.chosenCategory = IOUtils.pickCategory(restIO.getCategories()).getId();
-            receipt.description = IOUtils.pickDescription(receipt.getDescription());
+            PostProcessor postProcessor = PostProcessor.getMatch(receipt);
+            if(postProcessor != null) {
+                IOUtils.printOut("Category found ("+postProcessor.category+"). ");
+                receipt.chosenCategory = postProcessor.category;
+            } else {
+                receipt.chosenCategory = IOUtils.pickCategory(restIO.getCategories()).getId();
+            }
+            if(postProcessor != null && postProcessor.descr != null ) {
+                IOUtils.printOut("Description found ("+postProcessor.descr+").");
+            } else {
+                receipt.description = IOUtils.pickDescription(receipt.getDescription());
+            }
+            if(postProcessor != null && postProcessor.descr != null ) IOUtils.printOut("\n");
         }
     }
 

@@ -45,7 +45,7 @@ public class P {
 		this.a = a;
 		this.s = s;
 		this.g = g;
-		this.descr = (descr.length() > 50 ? descr.substring(0,50) : descr);
+		this.descr = (descr != null && descr.length() > 50 ? descr.substring(0,50) : descr);
 		this.l = l;
 	}
 

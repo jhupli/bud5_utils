@@ -18,7 +18,7 @@ public class Main {
         IOUtils.printOut("Collecting ..");
         do {
             line = statements.getLine();
-            if(null == line) break;
+            if(null == line)     break;
             if(line.startsWith("***") || line.startsWith("*>*")) {
                 IOUtils.writeRawLog(line, args[1]);
             } else {
@@ -32,7 +32,7 @@ public class Main {
         parser.prepare();
         IOUtils.printOut("Prepare done. \n");
         IOUtils.dump(args[1]+".after_prepare", parser);
-        IOUtils.printOut("Preparing " + size + " receipt(s) :\n");
+
         if (IOUtils.askYesNo()) {
             IOUtils.printOut("Updating Onassis: ");
             RestIO.setNow();

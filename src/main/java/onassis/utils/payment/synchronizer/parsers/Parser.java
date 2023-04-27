@@ -3,8 +3,11 @@ package onassis.utils.payment.synchronizer.parsers;
 import lombok.SneakyThrows;
 
 import java.io.FileReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Runtime.getRuntime;
@@ -57,6 +60,8 @@ public class Parser {
 
     @SneakyThrows
     public Parser(String bank) {
+
+        //read properties
         String propFileName = String.format("regexps/%s.properties", bank);
         PropertiesExt _properties = new PropertiesExt();
         _properties.load(new FileReader(propFileName));
@@ -65,6 +70,16 @@ public class Parser {
 
         if (null == parsers.get(Target.BEGIN)) {
             throw new IllegalArgumentException("Empty regexps!");
+        }
+        // read postprocessors
+        String postProcessorsFileName = String.format("regexps/%s.postprocess", bank);
+        List<String> content;
+        try (Stream<String> lines = Files.lines(Paths.get(postProcessorsFileName))) {
+            content = lines.collect(Collectors.toList());
+        }
+
+        for(String line : content) {
+            new PostProcessor(line);
         }
 
         Thread shutdownThread = new Thread() {
