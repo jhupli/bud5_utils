@@ -67,13 +67,13 @@ public class Matchable {
         } else if(state.equals(State.CREATE)) {
             PostProcessor postProcessor = PostProcessor.getMatch(receipt);
             if(postProcessor != null) {
-                IOUtils.printOut("Category found ("+postProcessor.category+"). ");
+                IOUtils.printOut("Category found ("+postProcessor.category+").\n");
                 receipt.chosenCategory = postProcessor.category;
             } else {
                 receipt.chosenCategory = IOUtils.pickCategory(restIO.getCategories()).getId();
             }
             if(postProcessor != null && postProcessor.descr != null ) {
-                IOUtils.printOut("Description found ("+postProcessor.descr+").");
+                IOUtils.printOut("Description found (\""+postProcessor.descr+"\").\n");
             } else {
                 receipt.description = IOUtils.pickDescription(receipt.getDescription());
             }
