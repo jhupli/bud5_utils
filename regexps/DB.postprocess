@@ -11,7 +11,7 @@ Quartier Apotheke;10;Quartier Apotheke Maassenstr
 DRIESENER APOTHEKE;10;DRIESENER APOTHEKE
 WEISSENSEER-APOTHEK;10;WEISSENSEER-APOTHEK
 Geldautomat;14;DB->Cash
-flaschenpost;5:Flaschenpost
+flaschenpost;5;Flaschenpost
 Transakt Mobilfunk;7;Mobil/Telekom Deutschland
 Transakt Festnetz;7;Festnetz/Telekom Deutschland
 Lohn/Gehalt;1;Palkka

@@ -17,7 +17,7 @@ public class PostProcessor {
         if(line.isEmpty()) return;
         String [] parts = line.split(";");
         category = Integer.parseInt(parts[1]);
-        tags = Arrays.asList(parts[0].split("|"));
+        tags = Arrays.asList(parts[0].split("#"));
         if(parts.length > 2) {
             descr = parts[2];
         }
