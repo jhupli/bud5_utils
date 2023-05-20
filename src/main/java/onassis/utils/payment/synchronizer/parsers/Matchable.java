@@ -69,6 +69,7 @@ public class Matchable {
             if(postProcessor != null) {
                 IOUtils.printOut("Category found ("+postProcessor.category+").\n");
                 receipt.chosenCategory = postProcessor.category;
+                receipt.description = postProcessor.descr;
             } else {
                 receipt.chosenCategory = IOUtils.pickCategory(restIO.getCategories()).getId();
             }

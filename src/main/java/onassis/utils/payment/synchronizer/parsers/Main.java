@@ -37,7 +37,7 @@ public class Main {
             IOUtils.printOut("Updating Onassis: ");
             RestIO.setNow();
             parser.update(args[1]);
-            IOUtils.printOut("Done.\n");
+            IOUtils.printOut("\nDone.\n");
         }
 
 
