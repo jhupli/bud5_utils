@@ -80,7 +80,7 @@ public class IOUtils {
             }
         }
 
-        void writeLog(Matchable m) throws  Exception{
+        public void writeLog(Matchable m) throws  Exception{
                 BufferedWriter writer = new BufferedWriter(new FileWriter(statementFileName + ".onassis", true));
                 String linePrefix = "";
                 switch (m.getState()) {
@@ -101,6 +101,7 @@ public class IOUtils {
                 for (Line l : m.getReceipt().getLines()) {
                     writer.write( linePrefix + l.getLine() + "\n");
                 }
+                writer.write( "-------------------------\n");
                 writer.close();
         }
     }
