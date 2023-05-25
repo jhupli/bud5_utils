@@ -26,9 +26,11 @@ public class PostProcessor {
 
     private PostProcessor match(Receipt receipt) {
         for(Line line : receipt.getLines()) {
-            for(String tag : tags) {
-                if(line.getLine().toUpperCase().contains(tag.toUpperCase())) {
-                    return this;
+            if(!line.getLine().startsWith("***") && !line.getLine().startsWith("*>*")) {
+                for (String tag : tags) {
+                    if (line.getLine().toUpperCase().contains(tag.toUpperCase())) {
+                        return this;
+                    }
                 }
             }
         }

@@ -95,14 +95,11 @@ public class Parser {
         if (!restIO.login()) {
             throw new RuntimeException("Login failed.");
         }
+        m = new Matchable(restIO);
     }
 
-    Matchable m = new Matchable(restIO);
+    Matchable m = null;
     List<Matchable> matchables = new ArrayList<>();
-
-    {
-        matchables.add(m);
-    }
 
     private Matchable getLastMatchable() {
         return matchables.get(matchables.size() - 1);
@@ -111,13 +108,20 @@ public class Parser {
     private Set<Integer> blackList = new HashSet<>(); //of p-ids
 
     public void collect(String str) {
-
-        if (parsers.get(Target.BEGIN).match(str)) {
-            m = new Matchable(restIO);
+        if(str.startsWith("***") || str.startsWith("*>*")) {
+            m.getReceipt().getLines().add(new Line(str));
+        } else {
+            if (parsers.get(Target.BEGIN).match(str)) {
+                m.collect(str);
+                IOUtils.printOut("."); //one receipt parsed
+            }
             matchables.add(m);
-            IOUtils.printOut("."); //one receipt parsed
+            m = new Matchable(restIO);
+
+
+
+
         }
-        m.collect(str);
     }
 
     final public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");

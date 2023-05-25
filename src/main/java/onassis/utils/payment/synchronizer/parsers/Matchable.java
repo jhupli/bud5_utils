@@ -76,7 +76,7 @@ public class Matchable {
             if(postProcessor != null && postProcessor.descr != null ) {
                 IOUtils.printOut("Description found (\""+postProcessor.descr+"\").\n");
             } else {
-                receipt.description = IOUtils.pickDescription(receipt.getDescription());
+                receipt.description = receipt.getDescription(); //IOUtils.pickDescription(receipt.getDescription());
             }
             if(postProcessor != null && postProcessor.descr != null ) IOUtils.printOut("\n");
         }

@@ -16,15 +16,13 @@ public class Main {
         IOUtils.StatementReader statements = new IOUtils.StatementReader(args[1]);
         String line = null;
         IOUtils.printOut("Collecting ..");
+
         do {
             line = statements.getLine();
             if(null == line)     break;
-            if(line.startsWith("***") || line.startsWith("*>*")) {
-                IOUtils.writeRawLog(line, args[1]);
-            } else {
-                parser.collect(line);
-            }
+            parser.collect(line);
         } while(null != line);
+
         IOUtils.printOut(" Done\n");
         IOUtils.dump(args[1]+".after_collect", parser);
         long size = parser.matchables.stream().filter(p -> p.getState().equals(Matchable.State.ALL_ATTRS_FOUND)).count();
