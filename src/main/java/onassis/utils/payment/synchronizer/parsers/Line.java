@@ -39,6 +39,9 @@ public class Line {
 
     void collect(int i, String str, Map<Target, String> collectedValues) {
         for(Target target : Target.values()) {
+            if(target.equals(Target.SKIP)) {
+                return;
+            }
             if(collectedValues.containsKey(target)) {
                 continue;
             }

@@ -84,7 +84,11 @@ public class Receipt {
     public void collect(String str) {
         Line newLine = new Line(str);
         lines.add(newLine);
-
+        String value = Target.SKIP.partialParser.anymatch(str);
+        if(null != value) {
+            collectedValues.put(Target.SKIP, value);
+            return;
+        }
         for (int i = 0; i < Parser.parsers.getMaxLength(); i++) {
             newLine.collect(i, str, collectedValues);
         }

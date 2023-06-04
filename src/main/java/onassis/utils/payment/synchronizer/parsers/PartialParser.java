@@ -54,6 +54,16 @@ public class PartialParser {
         return null;
     }
 
+    public String anymatch(String text) {
+        int i=0;
+        for(Pattern p : this.patterns) {
+            Matcher matcher = p.matcher(text);
+            if (matcher.find()) {
+                return format(matcher.group(1));
+            }
+        }
+        return null;
+    }
     public String format(String text) {
         return text;
     }
