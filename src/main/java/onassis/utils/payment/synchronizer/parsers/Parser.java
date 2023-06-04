@@ -111,16 +111,12 @@ public class Parser {
         if(str.startsWith("***") || str.startsWith("*>*")) {
             m.getReceipt().getLines().add(new Line(str));
         } else {
-            if (parsers.get(Target.BEGIN).match(str)) {
-                m.collect(str);
+            if (parsers.get(Target.BEGIN).match(str) && m.getReceipt().collectedValues.containsKey(Target.BEGIN)) {
+                matchables.add(m);
+                m = new Matchable(restIO);
                 IOUtils.printOut("."); //one receipt parsed
             }
-            matchables.add(m);
-            m = new Matchable(restIO);
-
-
-
-
+            m.collect(str);
         }
     }
 
