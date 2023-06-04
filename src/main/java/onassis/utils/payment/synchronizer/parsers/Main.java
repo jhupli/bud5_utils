@@ -19,8 +19,8 @@ public class Main {
 
         do {
             line = statements.getLine();
-            if(null == line)     break;
             parser.collect(line);
+            if(null == line)     break;
         } while(null != line);
 
         IOUtils.printOut(" Done\n");

@@ -108,6 +108,10 @@ public class Parser {
     private Set<Integer> blackList = new HashSet<>(); //of p-ids
 
     public void collect(String str) {
+        if(null == str) {
+            matchables.add(m); //EOF
+            return;
+        }
         if(str.startsWith("***") || str.startsWith("*>*")) {
             m.getReceipt().getLines().add(new Line(str));
         } else {
