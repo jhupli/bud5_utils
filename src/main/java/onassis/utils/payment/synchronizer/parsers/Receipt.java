@@ -57,11 +57,24 @@ public class Receipt {
                 collectedValues.containsKey(Target.DECIMAL);
     }
 
-    public PInfo getPseudoP() {
+    public PInfo getPseudoP(RestIO restIO) {
         if(!hasItAll()) {
             return null;
         }
-        return new PInfo(null, getDate(), getDate(), getAmount(), null, RestIO.getAccount(), getDescription(), true);
+
+        String descr = getDescription();
+        String c_descr = null;
+        PostProcessor postProcessor = PostProcessor.getMatch(this);
+        if(null != postProcessor) {
+            descr = postProcessor.descr + (StringUtils.isNotBlank(descr) ? ": " + descr : "");
+            Optional<C> c = restIO.getCategories().stream().distinct().filter(cc -> cc.id == postProcessor.category).findFirst();
+            if(null != c.get()) {
+                c_descr = c.get().getDescr();
+                chosenCategory = c.get().getId();
+            }
+        }
+        return new PInfo(null, getDate(), getDate(), getAmount(), c_descr, RestIO.getAccount(), descr, true);
+
     //PInfo(Integer id, Date dc, Date d,       BigDecimal i, String c_descr, String a_descr, String descr) {
     }
 

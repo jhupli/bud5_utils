@@ -162,11 +162,11 @@ kulmiin?
                         .header("Date").with((p) -> { return new SimpleDateFormat("dd.MM.yyyy").format(p.getDc());}),
                 (new Column()).minWidth(15).maxWidth(15, OverflowBehaviour.ELLIPSIS_RIGHT).headerAlign(HorizontalAlign.CENTER)
                         .dataAlign(HorizontalAlign.CENTER)
-                        .header("Category").with((p) -> { return i != pInfoList.size() - 1 ? p.getC_descr() : "-"; }),
+                        .header("Category").with((p) -> { return p.getC_descr();  }),
 
-                (new Column()).minWidth(15).maxWidth(15, OverflowBehaviour.ELLIPSIS_RIGHT).headerAlign(HorizontalAlign.CENTER)
+/*                (new Column()).minWidth(15).maxWidth(15, OverflowBehaviour.ELLIPSIS_RIGHT).headerAlign(HorizontalAlign.CENTER)
                         .dataAlign(HorizontalAlign.CENTER)
-                        .header("Category").with((p) -> { return i != pInfoList.size() - 1 ? p.getC_descr() : "-"; }),
+                        .header("Category").with((p) -> { return i != pInfoList.size() - 1 ? p.getC_descr() : "-"; }), */
 
                 (new Column()).minWidth(3).maxWidth(3, OverflowBehaviour.ELLIPSIS_RIGHT).headerAlign(HorizontalAlign.CENTER)
                         .dataAlign(HorizontalAlign.CENTER)

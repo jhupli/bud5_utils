@@ -65,6 +65,14 @@ public class Matchable {
         if(state.equals(State.MATCH_FOUND) || state.equals(State.MATCH_FOUND_ALREADY_LOCKED)) {
             blackList.add(theChosenP.getId());
         } else if(state.equals(State.CREATE)) {
+            //JHB
+            if(null == this.getReceipt().getChosenCategory()) {
+                receipt.chosenCategory = IOUtils.pickCategory(restIO.getCategories()).getId();
+            }
+            //JHE
+
+            //JHB
+            /*
             PostProcessor postProcessor = PostProcessor.getMatch(receipt);
             if(postProcessor != null) {
                 IOUtils.printOut("Category found ("+postProcessor.category+").\n");
@@ -79,6 +87,8 @@ public class Matchable {
                 receipt.description = receipt.getDescription(); //IOUtils.pickDescription(receipt.getDescription());
             }
             if(postProcessor != null && postProcessor.descr != null ) IOUtils.printOut("\n");
+            */
+            //JHE
         }
     }
 
@@ -87,7 +97,7 @@ public class Matchable {
         if(receipt.hasItAll() && state.equals(State.ATTRS_NOT_FOUND)) {
             state = State.ALL_ATTRS_FOUND;
             pInfo = restIO.getPCandidates(receipt);
-            pInfo.add(receipt.getPseudoP());
+            pInfo.add(receipt.getPseudoP(restIO));
         }
     }
 
