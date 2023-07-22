@@ -94,7 +94,7 @@ public class Matchable {
 
     public void collect(String str) {
         receipt.collect(str);
-        if(receipt.hasItAll() && state.equals(State.ATTRS_NOT_FOUND)) {
+        if(receipt.hasItAll()) { // && state.equals(State.ATTRS_NOT_FOUND)) {
             state = State.ALL_ATTRS_FOUND;
             pInfo = restIO.getPCandidates(receipt);
             pInfo.add(receipt.getPseudoP(restIO));

@@ -100,9 +100,10 @@ public class Receipt {
         String value = Target.SKIP.partialParser.anymatch(str);
         if(null != value) {
             collectedValues.put(Target.SKIP, value);
+            newLine.meta.add(new Line.Meta(Target.SKIP, "*" , -1, value));
             return;
         }
-        for (int i = 0; i < Parser.parsers.getMaxLength(); i++) {
+        for (int i = 0; i < /*Parser.parsers.getMaxLength()*/ Parser.parsers.size(); i++) {
             newLine.collect(i, str, collectedValues);
         }
     }
