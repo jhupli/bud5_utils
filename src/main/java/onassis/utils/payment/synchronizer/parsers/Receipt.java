@@ -67,6 +67,7 @@ public class Receipt {
         PostProcessor postProcessor = PostProcessor.getMatch(this);
         if(null != postProcessor) {
             descr = postProcessor.descr + (StringUtils.isNotBlank(descr) ? ": " + descr : "");
+            description = aakkosetPois(descr);
             Optional<C> c = restIO.getCategories().stream().distinct().filter(cc -> cc.id == postProcessor.category).findFirst();
             if(null != c.get()) {
                 c_descr = c.get().getDescr();
@@ -78,6 +79,15 @@ public class Receipt {
     //PInfo(Integer id, Date dc, Date d,       BigDecimal i, String c_descr, String a_descr, String descr) {
     }
 
+    private String aakkosetPois(String line) {
+        return line.replaceAll("ä","ae")
+                .replaceAll("Ä","Ae")
+                .replaceAll("ö","oe")
+                .replaceAll("Ö","Oe")
+                .replaceAll("ü","ue")
+                .replaceAll("Ü","Ue")
+                .replaceAll("ß","ss");
+    }
     public P getP(RestIO restIO) {
         if(!hasItAll()) {
             return null;
