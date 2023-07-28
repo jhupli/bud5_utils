@@ -158,7 +158,7 @@ public class RestIO {
 
     List<PInfo> getPCandidates(Receipt receipt) {
         List<PInfo> pInfos = null;
-        String url = String.format("http://%s/info?d=%s&i=%s&a=%s", this.host, receipt.getDateString(), receipt.getAmount(), this.account);
+        String url = String.format("http://%s/info?d=%s&i=%s&a=%s", this.host, receipt.getDateString(), receipt.getAmount(), this.accountId.intValue());
         receipt.setUrl(url);
         String responseJson = ((Response) RestAssured.given().auth().basic(this.user, this.pw).when().get(url, new Object[0])).asString();
         List<PInfo> Infos = (new Gson()).fromJson(responseJson, new TypeToken<List<PInfo>>() {

@@ -67,6 +67,7 @@ public class Receipt {
         PostProcessor postProcessor = PostProcessor.getMatch(this);
         if(null != postProcessor) {
             descr = postProcessor.descr + (StringUtils.isNotBlank(descr) ? ": " + descr : "");
+            description = aakkosetPois(descr);
             Optional<C> c = restIO.getCategories().stream().distinct().filter(cc -> cc.id == postProcessor.category).findFirst();
             if(null != c.get()) {
                 c_descr = c.get().getDescr();
@@ -78,6 +79,15 @@ public class Receipt {
     //PInfo(Integer id, Date dc, Date d,       BigDecimal i, String c_descr, String a_descr, String descr) {
     }
 
+    private String aakkosetPois(String line) {
+        return line.replaceAll("ä","ae")
+                .replaceAll("Ä","Ae")
+                .replaceAll("ö","oe")
+                .replaceAll("Ö","Oe")
+                .replaceAll("ü","ue")
+                .replaceAll("Ü","Ue")
+                .replaceAll("ß","ss");
+    }
     public P getP(RestIO restIO) {
         if(!hasItAll()) {
             return null;
@@ -100,9 +110,10 @@ public class Receipt {
         String value = Target.SKIP.partialParser.anymatch(str);
         if(null != value) {
             collectedValues.put(Target.SKIP, value);
+            newLine.meta.add(new Line.Meta(Target.SKIP, "*" , -1, value));
             return;
         }
-        for (int i = 0; i < Parser.parsers.getMaxLength(); i++) {
+        for (int i = 0; i < /*Parser.parsers.getMaxLength()*/ Parser.parsers.size(); i++) {
             newLine.collect(i, str, collectedValues);
         }
     }
