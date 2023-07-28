@@ -32,22 +32,34 @@ import onassis.utils.payment.synchronizer.parsers.Matchable;
 import onassis.utils.payment.synchronizer.parsers.Matchable.State;
 import onassis.utils.payment.synchronizer.parsers.Parser;
 
+import static java.lang.Runtime.getRuntime;
+
 public class IOUtils {
-    public List<String> fileLines = new ArrayList();
+    public List<String> statementLines = new ArrayList();
     public final String statementFileName;
     @SneakyThrows
     public IOUtils(String statementFileName) {
         this.statementFileName = statementFileName;
+        Thread shutdownThread = new Thread() {
+            @Override
+            public void run() {
+                farewell();
+            }
+        };
+        getRuntime().addShutdownHook(shutdownThread);
 
         Scanner scan;
         scan = new Scanner(new File(statementFileName));
         // check that there is not already logfile
         isOnassisFileReadOnly(statementFileName);
         if(!scan.hasNext()) {
-            fileLines.add(scan.nextLine());
+            statementLines.add(scan.nextLine());
         }
         printOut(statementFileName + " read.\n");
+    }
 
+    static public boolean isSkipLine(String line) {
+        return line.startsWith("***") || line.startsWith("*>*");
     }
 
     private static void isOnassisFileReadOnly(String basefileName) {

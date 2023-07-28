@@ -18,6 +18,9 @@ public class Main {
         IOUtils.muteLoggers();
 
         System.exit(0);
+
+        Parsers parsers = new Parsers(args[0]);
+        PostProcessor postProcessor = new PostProcessor(args[0]);
         /*
 
         Parser parser = new Parser(args[0]);
