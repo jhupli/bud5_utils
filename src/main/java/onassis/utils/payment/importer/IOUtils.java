@@ -35,8 +35,8 @@ import onassis.utils.payment.synchronizer.parsers.Parser;
 import static java.lang.Runtime.getRuntime;
 
 public class IOUtils {
-    public List<String> statementLines = new ArrayList();
-    public final String statementFileName;
+    static public List<String> statementLines = new ArrayList();
+    static public String statementFileName;
     @SneakyThrows
     public IOUtils(String statementFileName) {
         this.statementFileName = statementFileName;
@@ -62,7 +62,7 @@ public class IOUtils {
         return line.startsWith("***") || line.startsWith("*>*");
     }
 
-    private static void isOnassisFileReadOnly(String basefileName) {
+    static private void isOnassisFileReadOnly(String basefileName) {
         File f = new File(basefileName + ".onassis");
         if(f.exists()) {
             printOut("ERROR: there is already " + basefileName + ".onassis - file!\n");
@@ -71,13 +71,13 @@ public class IOUtils {
         }
     }
 
-    void lockLog() {
+    static void lockLog() {
         File f = new File(statementFileName + ".onassis");
         if(!f.setReadOnly()) {
             printOut("WARN: could not set .onassis -file readOnly.");
         }
     }
-    public static void muteLoggers() {
+    static public void muteLoggers() {
         Set<String> loggers = new HashSet<>(Arrays.asList("org.apache.http", "groovyx.net.http", "com.jayway.restassured.internal.RequestSpecificationImpl"));
 
         for(String log:loggers) {
@@ -87,13 +87,13 @@ public class IOUtils {
         }
     }
 
-    public static void writeRawLog(String s, String statementFileName) throws  Exception{
+    static public void writeRawLog(String s, String statementFileName) throws  Exception{
         BufferedWriter writer = new BufferedWriter(new FileWriter(statementFileName + ".onassis", true));
         writer.write(s +"\n");
         writer.close();
     }
 
-    public static class StatementWriter{
+    static public class StatementWriter{
         String statementFileName = null;
         @SneakyThrows
         public StatementWriter(String statementFileName) {
@@ -156,11 +156,11 @@ kulmiin?
      */
 
 
-    private static final Character[] TABLE_ASCII =                    new Character[]{'╭', '─', '┬', '╮', '│', '│', '│', '╞', '═', '╪', '╡', '│', '│', '│',  '├',  '─',  '┼',  '┤', '├', '─', '┤', '┤', '│', '│', '│', '╰', '─', '┴', '┘'};
-    private static final Character[] TABLE_ASCII_NO_DATA_SEPARATORS = new Character[]{'╭', '─', '┬', '╮', '│', '│', '│', '╞', '═', '╪', '╡', '│', '│', '│', null, null, null, null, '├', '─', '┤', '┤', '│', '│', '│', '╰', '─', '┴', '╯'};
+    static private final Character[] TABLE_ASCII =                    new Character[]{'╭', '─', '┬', '╮', '│', '│', '│', '╞', '═', '╪', '╡', '│', '│', '│',  '├',  '─',  '┼',  '┤', '├', '─', '┤', '┤', '│', '│', '│', '╰', '─', '┴', '┘'};
+    static private final Character[] TABLE_ASCII_NO_DATA_SEPARATORS = new Character[]{'╭', '─', '┬', '╮', '│', '│', '│', '╞', '═', '╪', '╡', '│', '│', '│', null, null, null, null, '├', '─', '┤', '┤', '│', '│', '│', '╰', '─', '┴', '╯'};
 
-    public static int LINELENGTH = 80;
-    public static void showLines(List<String> rows, String header) {
+    static public int LINELENGTH = 80;
+    static public void showLines(List<String> rows, String header) {
         System.out.println(
                 AsciiTable.getTable(TABLE_ASCII_NO_DATA_SEPARATORS, rows,
                         Arrays.asList(
@@ -170,8 +170,8 @@ kulmiin?
         );
     };
 
-    private static String CREATE_KEY = "c";
-    public static void showP(List<PInfo> pInfoList) {
+    static private String CREATE_KEY = "c";
+    static public void showP(List<PInfo> pInfoList) {
         if(null == pInfoList) {
             return;
         }
@@ -200,12 +200,12 @@ kulmiin?
                         .header("Description").with((p) -> { return "" + p.getDescr(); })
         )));
     }
-    public static boolean askYesNo() {
+    static public boolean askYesNo() {
         return ask("Ready to update. Continue ?", "yYnN",null, null).equalsIgnoreCase("Y");
     }
 
-    private static int i;
-    public static C pickCategory(List<C> rows) {
+    static private int i;
+    static public C pickCategory(List<C> rows) {
         i=0;
 
         List<Pair<Pair, Pair >> cols = new ArrayList<>();
@@ -241,7 +241,7 @@ kulmiin?
         return null == answer ? null : rows.get(Integer.parseInt(answer) - 1);
     };
 
-    public static void dump(String baseFileName, Parser model) throws IOException {
+    static public void dump(String baseFileName, Parser model) throws IOException {
         printOut("Dumping model " + baseFileName + ".dump ..");
         BufferedWriter writer = new BufferedWriter(new FileWriter(baseFileName + ".dump"));
         writer.write(model.toString());
@@ -249,7 +249,7 @@ kulmiin?
         printOut(" Done.\n");
     }
     static int errorNro = 1;
-    public static void dumpErrorFile(String baseFileName, Exception e, Matchable m) throws IOException {
+    static public void dumpErrorFile(String baseFileName, Exception e, Matchable m) throws IOException {
         String fileName = baseFileName + ".error." + (errorNro++) + ".debug";
         printOut("Writing " + fileName + " ..");
         BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
@@ -263,7 +263,7 @@ kulmiin?
         writer.close();
         printOut(" Done.\n");
     }
-    public static State pickMatch(Matchable m, int i) {
+    static public State pickMatch(Matchable m, int i) {
         showLines(m.getReceipt().getLines().stream().map(l -> {return l.getLine(); }).collect(Collectors.toList()), ""+i+":"+" Receipt " + m.getReceipt().getAmount());
         showP(m.getPInfo());
         String answer =  ask("Pick a Payment #, c to create new, s to skip, b to break ", "scb", 1, m.getPInfo().size());
@@ -317,10 +317,10 @@ kulmiin?
                 new Column().header("Atmosphere Composition").maxWidth(12, OverflowBehaviour.ELLIPSIS_RIGHT).with(planet -> planet.atmosphere))));
     } */
 
-    private static String ask(String question, String possibleSingleAnswers, Integer start, Integer end) {
+    static private String ask(String question, String possibleSingleAnswers, Integer start, Integer end) {
         return ask(question, possibleSingleAnswers, start, end, false);
     }
-    private static String ask(String question, String possibleSingleAnswers, Integer start, Integer end, boolean allowFreeAnswer) {
+    static private String ask(String question, String possibleSingleAnswers, Integer start, Integer end, boolean allowFreeAnswer) {
         while(true) {
             System.out.print(question +
                     (null != possibleSingleAnswers ?  "[" + possibleSingleAnswers + "]" : "") +
@@ -360,16 +360,16 @@ kulmiin?
             }
         }
     }
-    public static String indent() {
+    static public String indent() {
         return "\n" + StringUtils.repeat(' ', Thread.currentThread().getStackTrace().length - 5);
     }
-    public static void printOut(String str) {
+    static public void printOut(String str) {
         System.out.print(str);
     }
-    public static String login() {
+    static public String login() {
         return ask("Onassis password", null, null, null);
     }
-    public static void farewell() {
+    static public void farewell() {
         printOut("Exiting ... Goodbye.\n");
     }
 }

@@ -1,8 +1,6 @@
 package onassis.utils.payment.importer;
 
 import lombok.SneakyThrows;
-import onassis.utils.payment.synchronizer.parsers.Line;
-import onassis.utils.payment.synchronizer.parsers.Receipt;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,10 +15,16 @@ public class PostProcessor {
     private List<String> tags = null;
     public String descr = null;
 
+    public PostProcessor(long category, List<String> tags, String descr) {
+        this.category = category;
+        this.tags = tags;
+        this.descr = descr;
+    }
+
     public static List<PostProcessor> postProcessors = new ArrayList<>();
 
     @SneakyThrows
-    PostProcessor(String bank) {
+    static public void init(String bank) {
         // read postprocessors
         String postProcessorsFileName = String.format("regexps/%s.postprocess", bank);
         List<String> content;
@@ -30,13 +34,25 @@ public class PostProcessor {
         for(String line : content) {
             if(line.isEmpty()) return;
             String [] parts = line.split(";");
-            category = Integer.parseInt(parts[1]);
-            tags = Arrays.asList(parts[0].split("#"));
+            Long category = Long.parseLong(parts[1]);
+            List<String>tags = Arrays.asList(parts[0].split("#"));
+            String descr = "";
             if(parts.length > 2) {
                 descr = parts[2];
             }
-            postProcessors.add(this);
+            postProcessors.add(new PostProcessor(category, tags, descr));
         }
+    }
+
+    public static PostProcessor getMatch(String statementLine) {
+        for(PostProcessor postProcessor : postProcessors) {
+            for (String tag : postProcessor.tags) {
+                if (statementLine.toUpperCase().contains(tag.toUpperCase())) {
+                    return postProcessor;
+                }
+            }
+        }
+        return null;
     }
 
     private PostProcessor match(Receipt receipt) {

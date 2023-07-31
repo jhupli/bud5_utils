@@ -28,15 +28,15 @@ import java.util.stream.Collectors;
 import static com.jayway.restassured.RestAssured.given;
 
 public class RestIO {
-    private String host;
-    private String user;
+    private static String host;
+    private static String user;
     @Getter
     private static String account;
     @Getter
     private static Integer accountId = null;
-    private String pw;
-    private List<C> categories = null;
-    private List<A> accounts = null;
+    private static String pw;
+    private static List<C> categories = null;
+    private static List<A> accounts = null;
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private static Date now = null;
@@ -55,7 +55,7 @@ public class RestIO {
         return nowStr;
     }
     @SneakyThrows
-    public RestIO(String bankName) {
+    public static void init(String bankName) {
         String fileName = String.format("regexps/%s.properties", bankName);
         InputStream in = new FileInputStream(fileName);
         Properties props = new Properties();
@@ -86,7 +86,7 @@ public class RestIO {
         }
     }
 
-    void create(P p) {
+    static void create(P p) {
         OnassisController.Updates u = new OnassisController.Updates();
         List<P> pList = new ArrayList<>();
         //p.setD(now);
@@ -103,14 +103,14 @@ public class RestIO {
         }
     }
 
-    private void update(OnassisController.Updates upd) {
+    static private void update(OnassisController.Updates upd) {
         String createUrl = String.format("http://%s/payments/update", host);
         String responseJson = ((Response) RestAssured.given().auth().basic(user, pw).header("Content-Type","application/json;charset=UTF-8").contentType("application/json").body(upd).when().post(createUrl)).asString();
         if(responseJson.length()>0) {
             throw new RuntimeException(responseJson);
         }
     }
-    boolean login() {
+    static boolean login() {
         pw = onassis.utils.payment.synchronizer.parsers.IOUtils.login();
         String catUrl = "http://" + host + "/cat/list";
         String accUrl = "http://" + host + "/acc/list";
@@ -146,7 +146,7 @@ public class RestIO {
         return categories != null;
     }
 
-    String newGroupId() {
+    static String newGroupId() {
         String url = "http://" + host + "/group/newid";
         try {
             String groupId =
@@ -158,17 +158,17 @@ public class RestIO {
         }
     }
 
-    List<PInfo> getPCandidates(Receipt receipt) {
+    static List<PInfo> getPCandidates(Receipt receipt) {
         List<PInfo> pInfos = null;
-        String url = String.format("http://%s/info?d=%s&i=%s&a=%s", this.host, receipt.getDateString(), receipt.getAmount(), this.accountId.intValue());
+        String url = String.format("http://%s/info?d=%s&i=%s&a=%s", host, receipt.getDateString(), receipt.getAmount(), accountId.intValue());
         receipt.setUrl(url);
-        String responseJson = ((Response) RestAssured.given().auth().basic(this.user, this.pw).when().get(url, new Object[0])).asString();
+        String responseJson = ((Response) RestAssured.given().auth().basic(user, pw).when().get(url, new Object[0])).asString();
         List<PInfo> Infos = (new Gson()).fromJson(responseJson, new TypeToken<List<PInfo>>() {
         }.getType());
         return Infos;
     }
 
-    List<C> getCategories() {
+    static List<C> getCategories() {
         return categories;
     }
 }

@@ -5,17 +5,14 @@ import lombok.Setter;
 import onassis.dto.C;
 import onassis.dto.P;
 import onassis.dto.PInfo;
-import onassis.utils.payment.synchronizer.parsers.IOUtils;
-import onassis.utils.payment.synchronizer.parsers.*;
-import org.apache.commons.lang3.StringUtils;
-
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static onassis.utils.payment.synchronizer.parsers.Parser.Target;
+import onassis.utils.payment.importer.Parsers.Target;
 
+import static onassis.utils.payment.importer.Parsers.Target.*;
 public class Receipt {
     @Getter
     private List<Line> lines = new ArrayList<>();
@@ -26,11 +23,11 @@ public class Receipt {
 
     @Getter
     @Setter
-    Long chosenCategory;
+    Long chosenCategory = null;
 
     @Getter
     @Setter
-    String description;
+    String description = "";
 
     @Override
     public String toString() {
@@ -40,7 +37,7 @@ public class Receipt {
                 indent + "url=" + url +
                 indent + "lines=" + lines +
                 indent + "chosenC=" + chosenCategory +
-                indent + "chosenDescription=" + description +
+                indent + "description=" + description +
                 indent + "} Receipt";
     }
 
@@ -50,13 +47,13 @@ public class Receipt {
     }
     public boolean hasItAll() {
         return
-        collectedValues.containsKey(Target.BEGIN) &&
-                collectedValues.containsKey(Target.DAY) &&
-                collectedValues.containsKey(Target.MONTH) &&
-                collectedValues.containsKey(Target.YEAR) &&
-                collectedValues.containsKey(Target.WHOLE) &&
-                collectedValues.containsKey(Target.DECIMAL);
+                collectedValues.containsKey(DAY) &&
+                collectedValues.containsKey(MONTH) &&
+                collectedValues.containsKey(YEAR) &&
+                collectedValues.containsKey(WHOLE) &&
+                collectedValues.containsKey(DECIMAL);
     }
+
 
     /*public PInfo getPseudoP(RestIO restIO) {
         if(!hasItAll()) {
@@ -105,16 +102,47 @@ public class Receipt {
                 true);
     }
 
+    public void parse() {
+        for(int i=0 ; i<lines.size() ; i++) {
+            for(Target target : Target.values()) {
+                if(BEGIN.equals(target) || CATEGORY.equals(target)) {
+                    continue;
+                }
+                Line line = lines.get(i);
+                String statementLine = line.getLine();
+                if(collectedValues.containsKey(target)) { //The first match will overrule
+                    continue;
+                }
+                if(i >= target.partialParser.length()) {
+                    continue;
+                }
+                String value = target.partialParser.match(i, statementLine); //Is there a match?
+                if(null != value) {
+                    line.meta.add(new Line.Meta(target, target.partialParser.rexps.get(i), i, null == value ? "" : value));
+                    collectedValues.put(target, value);
+                }
+
+                if(DESCR.equals(target) &&!IOUtils.isSkipLine(statementLine)) { //try find out descr and category
+                    PostProcessor postProcessor = PostProcessor.getMatch(statementLine);
+                    if(null != postProcessor) {
+                        value = null == value ? "" : ": " + value;
+                        collectedValues.put(DESCR, postProcessor.descr + value);
+                        collectedValues.put(CATEGORY, "" + postProcessor.category);
+                    }
+                }
+            }
+        }
+    }
     public void collect(String str) {
         Line newLine = new Line(str);
         lines.add(newLine);
-        String value = Target.SKIP.partialParser.anymatch(str);
+        String value = SKIP.partialParser.anymatch(str);
         if(null != value) {
-            collectedValues.put(Target.SKIP, value);
-            newLine.meta.add(new Line.Meta(Target.SKIP, "*" , -1, value));
+            collectedValues.put(SKIP, value);
+            newLine.meta.add(new Line.Meta(SKIP, "*" , -1, value));
             return;
         }
-        for (int i = 0; i < /*Parser.parsers.getMaxLength()*/ Parser.parsers.size(); i++) {
+        for (int i = 0; i < /*Parser.parsers.getMaxLength()*/ Parsers.parsers.size(); i++) {
             newLine.collect(i, str, collectedValues);
         }
     }
@@ -140,7 +168,7 @@ public class Receipt {
         return null;
     }
 
-    public Date getDate() {
+    private Date getDate() {
         Date date = null;
         try {
             date = dateFormat.parse(getDateString());
@@ -150,7 +178,7 @@ public class Receipt {
         return date;
     }
 
-    public BigDecimal getAmount() {
+    private BigDecimal getAmount() {
         long amount = Long.valueOf((collectedValues.containsKey(Target.UNARY) ?
                         collectedValues.get(Target.UNARY) : "") +
                         collectedValues.get(Target.WHOLE) +

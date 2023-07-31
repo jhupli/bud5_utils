@@ -3,10 +3,15 @@ package onassis.utils.payment.importer;
 import lombok.SneakyThrows;
 import onassis.utils.payment.synchronizer.parsers.Matchable;
 import onassis.utils.payment.synchronizer.parsers.Parser;
-import onassis.utils.payment.synchronizer.parsers.RestIO;
+
+import java.util.List;
 
 public class Main {
 
+    static public Parsers parsers = null;
+    static public PostProcessor postProcessor = null;
+    static public IOUtils ioUtils = null;
+    static public RestIO restIO = null;
     @SneakyThrows
     public static void main(String[] args) {
         if (args.length != 3) {
@@ -14,13 +19,22 @@ public class Main {
             System.exit(2);
         }
 
-        IOUtils ioUtils= new IOUtils(args[1]);
+        String bankName = args[1];
+        String statementsFile = args[2];
+
+        ioUtils = new IOUtils(statementsFile);
         IOUtils.muteLoggers();
+        RestIO.init(bankName);
+        Parsers.init(bankName);
+        PostProcessor.init(bankName);
+
+        List<Receipt> receipts = ReceiptFactory.getReceipts(ioUtils.statementLines);
+
+
 
         System.exit(0);
 
-        Parsers parsers = new Parsers(args[0]);
-        PostProcessor postProcessor = new PostProcessor(args[0]);
+
         /*
 
         Parser parser = new Parser(args[0]);

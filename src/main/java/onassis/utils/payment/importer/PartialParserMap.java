@@ -2,14 +2,14 @@ package onassis.utils.payment.importer;
 
 import java.util.HashMap;
 
-public class PartialParserMap extends HashMap<Parsers.Targets, PartialParser> {
+public class PartialParserMap extends HashMap<Parsers.Target, PartialParser> {
     private int maxLength = 0;
     public PartialParserMap() {
         super();
     }
 
     @Override
-    public PartialParser put(Parsers.Targets target, PartialParser partialParser) {
+    public PartialParser put(Parsers.Target target, PartialParser partialParser) {
         if(partialParser.length() > maxLength) {
             maxLength = partialParser.length();
         }
