@@ -111,35 +111,37 @@ public class Receipt {
             }
 
             String value = null;
-            for(Target target : Target.values()) {
-                if(BEGIN.equals(target) || CATEGORY.equals(target)) {
-                    //BEGIN on jo parsittu
-                    //CATEGORY haetaan DESCR yhteydessä, siis:
-                    continue;
-                }
+            for(int parserIx = 0 ; parserIx < PartialParserMap.maxLength ; parserIx++ ) {
+                for (Target target : Target.values()) {
+                    if (BEGIN.equals(target) || CATEGORY.equals(target)) {
+                        //BEGIN on jo parsittu
+                        //CATEGORY haetaan DESCR yhteydessä, siis:
+                        continue;
+                    }
 
-                if(collectedValues.containsKey(target)) {
-                    //The first match will overrule
-                    continue;
-                }
-                for(int parserIx = 0 ; parserIx < PartialParserMap.maxLength ; parserIx++ ) {
-                    value = target.match(parserIx, statementLine); //Is there a match?
+                    if (collectedValues.containsKey(target)) {
+                        //The first match will overrule
+                        continue;
+                    }
+
+                    value = target.match(parserIx, statementLine); //Is there a match with this index?
                     if (null != value) {
                         line.meta.add(new Line.Meta(target, target.partialParser.rexps.get(parserIx), parserIx, null == value ? "" : value));
                         collectedValues.put(target, value);
                     }
                 }
             }
-            String description = collectedValues.get(DESCR);
-            if(null == description) {
-                description = "";
-            }
-            PostProcessor postProcessor = PostProcessor.getMatch(this);
-            if (null != postProcessor) {
-                value = null == value ? "" : ": " + value;
-                collectedValues.put(DESCR, postProcessor.descr + value);
-                collectedValues.put(CATEGORY, "" + postProcessor.category);
-            }
+
+        }
+        String description = collectedValues.get(DESCR);
+        if(null == description) {
+            description = "";
+        }
+        PostProcessor postProcessor = PostProcessor.getMatch(this);
+        if (null != postProcessor) {
+            description = null == description ? "" : ": " + description;
+            collectedValues.put(DESCR, postProcessor.descr + description);
+            collectedValues.put(CATEGORY, "" + postProcessor.category);
         }
     }
 
