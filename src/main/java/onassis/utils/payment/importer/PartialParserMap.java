@@ -3,7 +3,7 @@ package onassis.utils.payment.importer;
 import java.util.HashMap;
 
 public class PartialParserMap extends HashMap<Parsers.Target, PartialParser> {
-    private int maxLength = 0;
+    public static int maxLength = 0;
     public PartialParserMap() {
         super();
     }

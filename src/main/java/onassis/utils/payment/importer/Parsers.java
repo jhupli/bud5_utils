@@ -32,6 +32,10 @@ public class Parsers {
             this.partialParser = partialParser;
         }
 
+        public String match(int ix, String line) {
+            return partialParser.match(ix, line);
+        }
+
         public static Stream<Target> stream() {
             return Stream.of(Target.values());
         }
