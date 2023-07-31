@@ -104,37 +104,45 @@ public class Receipt {
 
     public void parse() {
         for(int lineNr=0 ; lineNr<lines.size() ; lineNr++) {
+            Line line = lines.get(lineNr);
+            String statementLine = line.getLine();
+            if(IOUtils.isSkipLine(statementLine)) {
+                continue;
+            }
+
+            String value = null;
             for(Target target : Target.values()) {
                 if(BEGIN.equals(target) || CATEGORY.equals(target)) {
                     //BEGIN on jo parsittu
                     //CATEGORY haetaan DESCR yhteydessä, siis:
                     continue;
                 }
-                Line line = lines.get(lineNr);
-                String statementLine = line.getLine();
+
                 if(collectedValues.containsKey(target)) {
                     //The first match will overrule
                     continue;
                 }
                 for(int parserIx = 0 ; parserIx < PartialParserMap.maxLength ; parserIx++ ) {
-                    String value = target.match(parserIx, statementLine); //Is there a match?
+                    value = target.match(parserIx, statementLine); //Is there a match?
                     if (null != value) {
                         line.meta.add(new Line.Meta(target, target.partialParser.rexps.get(parserIx), parserIx, null == value ? "" : value));
                         collectedValues.put(target, value);
                     }
-
-                    if (DESCR.equals(target) && !IOUtils.isSkipLine(statementLine)) { //try find out descr and category
-                        PostProcessor postProcessor = PostProcessor.getMatch(statementLine);
-                        if (null != postProcessor) {
-                            value = null == value ? "" : ": " + value;
-                            collectedValues.put(DESCR, postProcessor.descr + value);
-                            collectedValues.put(CATEGORY, "" + postProcessor.category);
-                        }
-                    }
                 }
+            }
+            String description = collectedValues.get(DESCR);
+            if(null == description) {
+                description = "";
+            }
+            PostProcessor postProcessor = PostProcessor.getMatch(this);
+            if (null != postProcessor) {
+                value = null == value ? "" : ": " + value;
+                collectedValues.put(DESCR, postProcessor.descr + value);
+                collectedValues.put(CATEGORY, "" + postProcessor.category);
             }
         }
     }
+
     public void collect(String str) {
         Line newLine = new Line(str);
         lines.add(newLine);
