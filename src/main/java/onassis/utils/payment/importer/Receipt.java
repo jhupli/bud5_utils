@@ -112,13 +112,7 @@ public class Receipt {
 
             String value = null;
             for(int parserIx = 0 ; parserIx < PartialParserMap.maxLength ; parserIx++ ) {
-                for (Target target : Target.values()) {
-                    if (BEGIN.equals(target) || CATEGORY.equals(target)) {
-                        //BEGIN on jo parsittu
-                        //CATEGORY haetaan DESCR yhteydessä, siis:
-                        continue;
-                    }
-
+                for (Target target : Target.parseableTargets) {
                     if (collectedValues.containsKey(target)) {
                         //The first match will overrule
                         continue;
@@ -143,6 +137,8 @@ public class Receipt {
             collectedValues.put(DESCR, postProcessor.descr + description);
             collectedValues.put(CATEGORY, "" + postProcessor.category);
         }
+
+        //Last
     }
 
     public void collect(String str) {

@@ -18,6 +18,7 @@ import com.github.freva.asciitable.Column;
 import com.github.freva.asciitable.HorizontalAlign;
 import com.github.freva.asciitable.OverflowBehaviour;
 
+import org.apache.commons.lang3.CharSet;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.LoggerFactory;
@@ -325,7 +326,7 @@ kulmiin?
             System.out.print(question +
                     (null != possibleSingleAnswers ?  "[" + possibleSingleAnswers + "]" : "") +
                     " (or q to quit) : ");
-            Scanner sc = new Scanner(System.in); //System.in is a standard input stream.
+            Scanner sc = new Scanner(System.in, "UTF-8"); //System.in is a standard input stream.
             String choice = sc.nextLine();
 
             if(StringUtils.isEmpty(choice)) {

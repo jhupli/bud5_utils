@@ -3,6 +3,8 @@ package onassis.utils.payment.importer;
 import lombok.SneakyThrows;
 
 import java.io.FileReader;
+import java.lang.reflect.Array;
+import java.util.List;
 import java.util.stream.Stream;
 
 
@@ -20,7 +22,7 @@ public class Parsers {
         CATEGORY("", "Category", new PartialParser()),
         ;
 
-
+        static public final Target [] parseableTargets = new Target[] { DAY, MONTH, YEAR, WHOLE, DECIMAL, SKIP, UNARY, DESCR, };
         public String regexpName;
         public String name;
         public PartialParser partialParser;

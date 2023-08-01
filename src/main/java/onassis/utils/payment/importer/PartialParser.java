@@ -42,6 +42,13 @@ public class PartialParser {
         return false;
     }
 
+    public String match(int row, String text, String defaultValue) {
+        if(null == anymatch(text)) {
+            return defaultValue;
+        }
+        return match(row, text);
+    }
+    
     public String match(int row, String text) {
         if(row >= this.patterns.size()) {
             return null;
