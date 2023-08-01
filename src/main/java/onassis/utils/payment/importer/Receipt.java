@@ -102,6 +102,19 @@ public class Receipt {
                 true);
     }
 
+    public void interact() {
+
+        if(!collectedValues.containsKey(CATEGORY)) {
+            C c = IOUtils.pickCategory();
+            collectedValues.put(CATEGORY,"" + c.getId());
+            collectedValues.put(CATEGORY_NAME,"" + c.getDescr());
+        }
+
+        List<PInfo> candidates = RestIO.getPCandidates(this);
+
+
+    }
+
     public void parse() {
         for(int lineNr=0 ; lineNr<lines.size() ; lineNr++) {
             Line line = lines.get(lineNr);
@@ -136,9 +149,16 @@ public class Receipt {
             description = null == description ? "" : ": " + description;
             collectedValues.put(DESCR, postProcessor.descr + description);
             collectedValues.put(CATEGORY, "" + postProcessor.category);
+            collectedValues.put(CATEGORY_NAME, "" + RestIO.getCategoryName(postProcessor.category));
         }
 
-        //Last
+        //Last the default Values, if any
+        for(Target t : parseableTargets) {
+            if(collectedValues.containsKey(t) || !Parsers.defaultValues.containsKey(t)) {
+                continue;
+            }
+            collectedValues.put(t, Parsers.defaultValues.get(t));
+        }
     }
 
     public void collect(String str) {
@@ -186,7 +206,7 @@ public class Receipt {
         return date;
     }
 
-    private BigDecimal getAmount() {
+    public BigDecimal getAmount() {
         long amount = Long.valueOf((collectedValues.containsKey(Target.UNARY) ?
                         collectedValues.get(Target.UNARY) : "") +
                         collectedValues.get(Target.WHOLE) +

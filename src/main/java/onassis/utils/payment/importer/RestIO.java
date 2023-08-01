@@ -35,13 +35,21 @@ public class RestIO {
     @Getter
     private static Integer accountId = null;
     private static String pw;
-    private static List<C> categories = null;
-    private static List<A> accounts = null;
+    public static List<C> categories = null;
+    public static List<A> accounts = null;
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private static Date now = null;
     private static String nowStr = null;
 
+    public static String getCategoryName(long i) {
+        for(C c : categories) {
+            if(c.id == i) {
+                return c.descr;
+            }
+        }
+        return null;
+    }
     public static void setNow() {
         now = new Date();
         nowStr = dateFormat.format(now);
@@ -163,11 +171,19 @@ public class RestIO {
         String url = String.format("http://%s/info?d=%s&i=%s&a=%s", host, receipt.getDateString(), receipt.getAmount(), accountId.intValue());
         receipt.setUrl(url);
         String responseJson = ((Response) RestAssured.given().auth().basic(user, pw).when().get(url, new Object[0])).asString();
+        List<PInfo> Infos = (new Gson()).fromJson(responseJson, new TypeToken<List<PInfo>>() {}.getType());
+        return Infos;
+    }
+
+    static List<PInfo> getPCandidates(onassis.utils.payment.importer.Receipt receipt) {
+        List<PInfo> pInfos = null;
+        String url = String.format("http://%s/info?d=%s&i=%s&a=%s", host, receipt.getDateString(), receipt.getAmount(), accountId.intValue());
+        receipt.setUrl(url);
+        String responseJson = ((Response) RestAssured.given().auth().basic(user, pw).when().get(url, new Object[0])).asString();
         List<PInfo> Infos = (new Gson()).fromJson(responseJson, new TypeToken<List<PInfo>>() {
         }.getType());
         return Infos;
     }
-
     static List<C> getCategories() {
         return categories;
     }

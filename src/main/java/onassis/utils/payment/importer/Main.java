@@ -12,6 +12,7 @@ public class Main {
     static public PostProcessor postProcessor = null;
     static public IOUtils ioUtils = null;
     static public RestIO restIO = null;
+
     @SneakyThrows
     public static void main(String[] args) {
         if (args.length != 3) {
@@ -29,6 +30,10 @@ public class Main {
         PostProcessor.init(bankName);
 
         List<Receipt> receipts = ReceiptFactory.getReceipts(ioUtils.statementLines);
+        IOUtils.dump(args[1]+".after_read", receipts);
+        receipts.stream().forEach(receipt -> receipt.parse());
+        IOUtils.dump(args[1]+".after_parse", receipts);
+
 
 
 

@@ -206,7 +206,8 @@ kulmiin?
     }
 
     static private int i;
-    static public C pickCategory(List<C> rows) {
+    static public C pickCategory() {
+        List<C> rows = RestIO.getCategories();
         i=0;
 
         List<Pair<Pair, Pair >> cols = new ArrayList<>();
@@ -242,7 +243,16 @@ kulmiin?
         return null == answer ? null : rows.get(Integer.parseInt(answer) - 1);
     };
 
-    static public void dump(String baseFileName, Parser model) throws IOException {
+    static public void dump(String baseFileName, List<Receipt> receiptsList) throws IOException {
+        printOut("Dumping model " + baseFileName + ".dump ..");
+        BufferedWriter writer = new BufferedWriter(new FileWriter(baseFileName + ".dump"));
+        for(Receipt receipt : receiptsList) {
+            writer.write(receipt.toString());
+        }
+        writer.close();
+        printOut(" Done.\n");
+    }
+    static public void dump(String baseFileName, Parsers model) throws IOException {
         printOut("Dumping model " + baseFileName + ".dump ..");
         BufferedWriter writer = new BufferedWriter(new FileWriter(baseFileName + ".dump"));
         writer.write(model.toString());
