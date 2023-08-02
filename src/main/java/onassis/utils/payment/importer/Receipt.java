@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import onassis.utils.payment.importer.Parsers.Target;
 
@@ -29,6 +30,9 @@ public class Receipt {
     @Setter
     String description = "";
 
+    @Getter
+    @Setter
+    List<PInfo> candidates = null;
     @Override
     public String toString() {
         String indent = IOUtils.indent();
@@ -42,16 +46,16 @@ public class Receipt {
     }
 
     Map<Target, String> collectedValues = new HashMap<>();
+    public int lineNr = 0;
+    private static AtomicInteger lineCount = new AtomicInteger(0);
 
     public Receipt() {
+        lineNr = lineCount.incrementAndGet();
     }
     public boolean hasItAll() {
         return
-                collectedValues.containsKey(DAY) &&
-                collectedValues.containsKey(MONTH) &&
-                collectedValues.containsKey(YEAR) &&
-                collectedValues.containsKey(WHOLE) &&
-                collectedValues.containsKey(DECIMAL);
+                collectedValues.containsKey(DAY) && collectedValues.containsKey(MONTH) && collectedValues.containsKey(YEAR)
+                        && collectedValues.containsKey(WHOLE) && collectedValues.containsKey(DECIMAL);
     }
 
 
@@ -86,20 +90,16 @@ public class Receipt {
                 .replaceAll("Ü","Ue")
                 .replaceAll("ß","ss");
     }
-    public P getP(RestIO restIO) {
+
+    public PInfo asPinfo() {
+        return new PInfo(null, getDate(), getDate(), getAmount(), getCategoryDescription(), RestIO.getAccount(), getDescription(), true);
+    }
+
+    public P asP(RestIO restIO) {
         if(!hasItAll()) {
             return null;
         }
-        return new P(null,
-                getDate(),
-                getDate(),
-                getAmount(),
-                Integer.parseInt("" + chosenCategory),
-                RestIO.getAccountId(),
-                true,
-                "TODO",
-                description,
-                true);
+        return new P(null, getDate(), getDate(), getAmount(), getCategory(), RestIO.getAccountId(), true,"", getDescription(), true);
     }
 
     public void interact() {
@@ -109,11 +109,11 @@ public class Receipt {
             collectedValues.put(CATEGORY,"" + c.getId());
             collectedValues.put(CATEGORY_NAME,"" + c.getDescr());
         }
-
-        List<PInfo> candidates = RestIO.getPCandidates(this);
+        candidates = RestIO.getPCandidates(this);
 
 
     }
+
 
     public void parse() {
         for(int lineNr=0 ; lineNr<lines.size() ; lineNr++) {
@@ -138,21 +138,19 @@ public class Receipt {
                     }
                 }
             }
+        }
 
-        }
-        String description = collectedValues.get(DESCR);
-        if(null == description) {
-            description = "";
-        }
+
         PostProcessor postProcessor = PostProcessor.getMatch(this);
         if (null != postProcessor) {
-            description = null == description ? "" : ": " + description;
-            collectedValues.put(DESCR, postProcessor.descr + description);
+            String originalDescription = collectedValues.get(DESCR); // "sample"
+            description = (null == originalDescription ? "" : ": " + originalDescription);
+            collectedValues.put(DESCR, postProcessor.descr + originalDescription); // "sample" -> "Tag: sample"
             collectedValues.put(CATEGORY, "" + postProcessor.category);
             collectedValues.put(CATEGORY_NAME, "" + RestIO.getCategoryName(postProcessor.category));
         }
 
-        //Last the default Values, if any
+        //Last, the default Values, if any
         for(Target t : parseableTargets) {
             if(collectedValues.containsKey(t) || !Parsers.defaultValues.containsKey(t)) {
                 continue;
@@ -189,11 +187,19 @@ public class Receipt {
 
     final private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
+    public String getCategoryDescription() {
+        return collectedValues.get(CATEGORY_NAME);
+    }
+
+    public int getCategory() {
+        return Integer.parseInt(collectedValues.get(CATEGORY_NAME));
+    }
     public String getDescription() {
-        if(collectedValues.containsKey(Target.DESCR)) {
+         return collectedValues.get(DESCR);
+        /*if(collectedValues.containsKey(Target.DESCR)) {
             return collectedValues.get(Target.DESCR).replaceAll("\t", " ").replaceAll("\n", " ");
         }
-        return null;
+        return null;*/
     }
 
     private Date getDate() {

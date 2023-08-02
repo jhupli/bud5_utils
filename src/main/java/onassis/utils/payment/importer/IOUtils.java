@@ -274,8 +274,8 @@ kulmiin?
         writer.close();
         printOut(" Done.\n");
     }
-    static public State pickMatch(Matchable m, int i) {
-        showLines(m.getReceipt().getLines().stream().map(l -> {return l.getLine(); }).collect(Collectors.toList()), ""+i+":"+" Receipt " + m.getReceipt().getAmount());
+    static public State pickMatch(Matchable m, int lineNr) {
+        showLines(m.getReceipt().getLines().stream().map(l -> {return l.getLine(); }).collect(Collectors.toList()), ""+lineNr+":"+" Receipt " + m.getReceipt().getAmount());
         showP(m.getPInfo());
         String answer =  ask("Pick a Payment #, c to create new, s to skip, b to break ", "scb", 1, m.getPInfo().size());
         if(answer.equalsIgnoreCase("s")) {
@@ -299,6 +299,33 @@ kulmiin?
         }
     }
 
+    static public State pickMatch(Receipt receipt) {
+        showLines(receipt.getLines().stream().map(l -> {return l.getLine(); }).collect(Collectors.toList()), ""+receipt.lineNr+":"+" Receipt " + receipt.getAmount());
+        List<PInfo> rows = new ArrayList<>(receipt.getCandidates());
+        rows.add(receipt.asPinfo()); // or shall we create a new brave transaction?
+        showP(rows);
+        String answer =  ask("Pick a Payment #, c to create new, s to skip, b to break ", "scb", 1, m.getPInfo().size());
+        if(answer.equalsIgnoreCase("s")) {
+            return State.SKIP;
+        }
+        if(answer.equalsIgnoreCase("b")) {
+            showLines(Arrays.asList("NOTE IMPORTANT: If running another round, use latest <previous input-file>.onassis as input!"),
+                    "*****IMPORTANT NOTE******");
+            return State.BREAK;
+        }
+        if(answer.equals(CREATE_KEY)) {
+            return State.CREATE;
+        } else {
+            PInfo pInfo = m.getPInfo().get(Integer.parseInt(answer) - 1);
+
+            m.setTheChosenP(pInfo);
+
+            if (pInfo.isLocked()) {
+                return State.MATCH_FOUND_ALREADY_LOCKED;
+            }
+            return State.MATCH_FOUND;
+        }
+    }
     static String pickDescription(String defaultDesc) {
         String answer = ask("Give description or 'x' to accept :", "x", null,null, true);
         if(!answer.equalsIgnoreCase("x")) {

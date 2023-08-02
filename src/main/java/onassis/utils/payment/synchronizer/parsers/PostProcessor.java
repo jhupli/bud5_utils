@@ -14,6 +14,7 @@ public class PostProcessor {
     private static List<PostProcessor> postProcessors = new ArrayList<>();
 
     PostProcessor(String line) {
+
         if(line.isEmpty()) return;
         String [] parts = line.split(";");
         category = Integer.parseInt(parts[1]);
