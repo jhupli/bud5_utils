@@ -226,6 +226,20 @@ kulmiin?
         printOut(" Done.\n");
     }
     static int errorNro = 1;
+    public static void dumpErrorFile(String baseFileName, Exception e, Receipt receipt) throws IOException {
+        String fileName = baseFileName + ".error." + (errorNro++) + ".debug";
+        printOut("Writing " + fileName + " ..");
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+        writer.write(e + "\n");
+        writer.write("-------------------------------------\n");
+        for(Line l : receipt.getLines()) {
+            writer.write(l.getLine() + "\n");
+        }
+        writer.write("-------------------------------------\n");
+        writer.write(receipt + "\n");
+        writer.close();
+        printOut(" Done.\n");
+    }
     public static void dumpErrorFile(String baseFileName, Exception e, Matchable m) throws IOException {
         String fileName = baseFileName + ".error." + (errorNro++) + ".debug";
         printOut("Writing " + fileName + " ..");

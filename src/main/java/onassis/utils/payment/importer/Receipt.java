@@ -55,31 +55,11 @@ public class Receipt {
     public boolean hasItAll() {
         return
                 collectedValues.containsKey(DAY) && collectedValues.containsKey(MONTH) && collectedValues.containsKey(YEAR)
-                        && collectedValues.containsKey(WHOLE) && collectedValues.containsKey(DECIMAL);
+                && collectedValues.containsKey(WHOLE) && collectedValues.containsKey(DECIMAL);
     }
 
 
-    /*public PInfo getPseudoP(RestIO restIO) {
-        if(!hasItAll()) {
-            return null;
-        }
 
-        String descr = getDescription();
-        String c_descr = null;
-        PostProcessor postProcessor = PostProcessor.getMatch(this);
-        if(null != postProcessor) {
-            descr = postProcessor.descr + (StringUtils.isNotBlank(descr) ? ": " + descr : "");
-            description = aakkosetPois(descr);
-            Optional<C> c = restIO.getCategories().stream().distinct().filter(cc -> cc.id == postProcessor.category).findFirst();
-            if(null != c.get()) {
-                c_descr = c.get().getDescr();
-                chosenCategory = c.get().getId();
-            }
-        }
-        return new PInfo(null, getDate(), getDate(), getAmount(), c_descr, RestIO.getAccount(), descr, true);
-
-    //PInfo(Integer id, Date dc, Date d,       BigDecimal i, String c_descr, String a_descr, String descr) {
-    }*/
 
     private String aakkosetPois(String line) {
         return line.replaceAll("ä","ae")
@@ -103,13 +83,13 @@ public class Receipt {
     }
 
     public void interact() {
-
         if(!collectedValues.containsKey(CATEGORY)) {
             C c = IOUtils.pickCategory();
             collectedValues.put(CATEGORY,"" + c.getId());
             collectedValues.put(CATEGORY_NAME,"" + c.getDescr());
         }
         candidates = RestIO.getPCandidates(this);
+
 
 
     }
