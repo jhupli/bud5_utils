@@ -11,9 +11,7 @@ import onassis.dto.A;
 import onassis.dto.C;
 import onassis.dto.P;
 import onassis.dto.PInfo;
-import onassis.utils.payment.synchronizer.parsers.IOUtils;
-import onassis.utils.payment.synchronizer.parsers.Parser;
-import onassis.utils.payment.synchronizer.parsers.Receipt;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.FileInputStream;
@@ -98,7 +96,7 @@ public class RestIO {
         OnassisController.Updates u = new OnassisController.Updates();
         List<P> pList = new ArrayList<>();
         //p.setD(now);
-        p.setG(Parser.gId);
+        p.setG(Parsers.getGroupId());
         pList.add(p);
         u.setCreated(pList);
         u.setModified(new ArrayList());
@@ -146,7 +144,7 @@ public class RestIO {
                 return account.equals(a.descr);
             }).findFirst().get().getId().intValue();
         } catch (Exception e) {
-            onassis.utils.payment.synchronizer.parsers.IOUtils.printOut(" Failed. Account not found.\n");
+            printOut(" Failed. Account not found.\n");
             System.exit(2);
         }
 
@@ -171,20 +169,14 @@ public class RestIO {
         String url = String.format("http://%s/info?d=%s&i=%s&a=%s", host, receipt.getDateString(), receipt.getAmount(), accountId.intValue());
         receipt.setUrl(url);
         String responseJson = ((Response) RestAssured.given().auth().basic(user, pw).when().get(url, new Object[0])).asString();
-        List<PInfo> Infos = (new Gson()).fromJson(responseJson, new TypeToken<List<PInfo>>() {}.getType());
-        return Infos;
-    }
-
-    static List<PInfo> getPCandidates(onassis.utils.payment.importer.Receipt receipt) {
-        List<PInfo> pInfos = null;
-        String url = String.format("http://%s/info?d=%s&i=%s&a=%s", host, receipt.getDateString(), receipt.getAmount(), accountId.intValue());
-        receipt.setUrl(url);
-        String responseJson = ((Response) RestAssured.given().auth().basic(user, pw).when().get(url, new Object[0])).asString();
         List<PInfo> Infos = (new Gson()).fromJson(responseJson, new TypeToken<List<PInfo>>() {
         }.getType());
         return Infos;
     }
     static List<C> getCategories() {
         return categories;
+    }
+    public static void printOut(String str) {
+        System.out.print(str);
     }
 }

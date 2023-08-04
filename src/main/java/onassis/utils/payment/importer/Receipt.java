@@ -14,7 +14,25 @@ import java.util.concurrent.atomic.AtomicInteger;
 import onassis.utils.payment.importer.Parsers.Target;
 
 import static onassis.utils.payment.importer.Parsers.Target.*;
+import static onassis.utils.payment.importer.Receipt.State.ATTRS_NOT_FOUND;
+
 public class Receipt {
+
+    public enum State {
+        ATTRS_NOT_FOUND,
+        ALL_ATTRS_FOUND,
+        SKIP,
+        BREAK,
+        MATCH_FOUND,
+        MATCH_FOUND_ALREADY_LOCKED,
+        CREATE,
+        ERROR,
+    }
+
+
+    @Getter
+    private State state = ATTRS_NOT_FOUND;
+
     @Getter
     private List<Line> lines = new ArrayList<>();
 
@@ -33,6 +51,8 @@ public class Receipt {
     @Getter
     @Setter
     List<PInfo> candidates = null;
+
+    PostProcessor postProcessor = null;
     @Override
     public String toString() {
         String indent = IOUtils.indent();
@@ -52,7 +72,7 @@ public class Receipt {
     public Receipt() {
         lineNr = lineCount.incrementAndGet();
     }
-    public boolean hasItAll() {
+    private boolean haveItAll() {
         return
                 collectedValues.containsKey(DAY) && collectedValues.containsKey(MONTH) && collectedValues.containsKey(YEAR)
                 && collectedValues.containsKey(WHOLE) && collectedValues.containsKey(DECIMAL);
@@ -76,24 +96,30 @@ public class Receipt {
     }
 
     public P asP(RestIO restIO) {
-        if(!hasItAll()) {
+        if(!haveItAll()) {
             return null;
         }
         return new P(null, getDate(), getDate(), getAmount(), getCategory(), RestIO.getAccountId(), true,"", getDescription(), true);
     }
 
-    public void interact() {
-        if(!collectedValues.containsKey(CATEGORY)) {
-            C c = IOUtils.pickCategory();
-            collectedValues.put(CATEGORY,"" + c.getId());
-            collectedValues.put(CATEGORY_NAME,"" + c.getDescr());
+
+    private String handleDescription(PostProcessor postProcessor) {
+        String original = collectedValues.get(DESCR);
+        if(null == postProcessor) {
+            collectedValues.put(DESCR, original);
+            return original;
+        } else {
+            description = (null == original ? "" : ": " + original);
+            collectedValues.put(DESCR, postProcessor.descr + original); // "sample" -> "Tag: sample"
+            collectedValues.put(CATEGORY, "" + postProcessor.category);
+            collectedValues.put(CATEGORY_NAME, "" + RestIO.getCategoryName(postProcessor.category));
+            return collectedValues.get(DESCR);
         }
-        candidates = RestIO.getPCandidates(this);
-
-
-
     }
 
+     private void getPostProcessorDescription() {
+        handleDescription(PostProcessor.getMatch(this));
+     }
 
     public void parse() {
         for(int lineNr=0 ; lineNr<lines.size() ; lineNr++) {
@@ -106,10 +132,16 @@ public class Receipt {
             String value = null;
             for(int parserIx = 0 ; parserIx < PartialParserMap.maxLength ; parserIx++ ) {
                 for (Target target : Target.parseableTargets) {
+                    //It may match fewer lines, so the first match wins
                     if (collectedValues.containsKey(target)) {
-                        //The first match will overrule
                         continue;
                     }
+
+                    /*
+                        matchers will be matched in line order
+                        whole_rexp.4 <- 4 is the line number
+                        all matchers with same line number are matched before matching to next line
+                     */
 
                     value = target.match(parserIx, statementLine); //Is there a match with this index?
                     if (null != value) {
@@ -120,15 +152,9 @@ public class Receipt {
             }
         }
 
-
+        //desciption and category from Postprocessor
         PostProcessor postProcessor = PostProcessor.getMatch(this);
-        if (null != postProcessor) {
-            String originalDescription = collectedValues.get(DESCR); // "sample"
-            description = (null == originalDescription ? "" : ": " + originalDescription);
-            collectedValues.put(DESCR, postProcessor.descr + originalDescription); // "sample" -> "Tag: sample"
-            collectedValues.put(CATEGORY, "" + postProcessor.category);
-            collectedValues.put(CATEGORY_NAME, "" + RestIO.getCategoryName(postProcessor.category));
-        }
+        handleDescription(postProcessor);
 
         //Last, the default Values, if any
         for(Target t : parseableTargets) {
@@ -139,6 +165,29 @@ public class Receipt {
         }
     }
 
+    public void interact() {
+        if(!collectedValues.containsKey(CATEGORY)) {
+            C c = IOUtils.pickCategory();
+            collectedValues.put(CATEGORY,"" + c.getId());
+            collectedValues.put(CATEGORY_NAME,"" + c.getDescr());
+        }
+
+        if(!collectedValues.containsKey(DESCR) || collectedValues.get(DESCR).trim().isEmpty()) {
+            String userDescr = IOUtils.pickDescription();
+            collectedValues.put(DESCR,userDescr);
+            PostProcessor postProcessor = PostProcessor.getMatch(userDescr);
+            handleDescription(postProcessor);
+        }
+
+        if(haveItAll()) {
+            candidates = RestIO.getPCandidates(this);
+            state = IOUtils.pickMatch(this);
+        }
+    }
+
+    public void update() {
+
+    }
     public void collect(String str) {
         Line newLine = new Line(str);
         lines.add(newLine);
@@ -152,6 +201,7 @@ public class Receipt {
             newLine.collect(i, str, collectedValues);
         }
     }
+
 
     public String getDateString() {
         if(! collectedValues.containsKey(Target.YEAR) ||

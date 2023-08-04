@@ -28,9 +28,9 @@ import ch.qos.logback.classic.Logger;
 import lombok.SneakyThrows;
 import onassis.dto.C;
 import onassis.dto.PInfo;
-import onassis.utils.payment.synchronizer.parsers.Line;
-import onassis.utils.payment.synchronizer.parsers.Matchable;
-import onassis.utils.payment.synchronizer.parsers.Matchable.State;
+import onassis.utils.payment.importer.Line;
+//import onassis.utils.payment.synchronizer.parsers.Matchable;
+import onassis.utils.payment.importer.Receipt.State;
 import onassis.utils.payment.synchronizer.parsers.Parser;
 
 import static java.lang.Runtime.getRuntime;
@@ -102,9 +102,33 @@ public class IOUtils {
 
         }
 
+        public void writeLog(Receipt receipt) throws  Exception{
+            BufferedWriter writer = new BufferedWriter(new FileWriter(statementFileName + ".onassis", true));
+            String linePrefix = "";
+            switch (receipt.getState()) {
+                case CREATE:
+                    linePrefix = "*>*";
+                    break;
+                case MATCH_FOUND_ALREADY_LOCKED:
+                case MATCH_FOUND:
+                    linePrefix = "***";
+                    break;
+                case ATTRS_NOT_FOUND:
+                    linePrefix = "***";
+                    break;
+                default:
+                    linePrefix = "";
+            }
+            for (Line l : receipt.getLines()) {
+                writer.write( (l.getLine().startsWith("***") ||  l.getLine().startsWith("*>*") ? "" : linePrefix) + l.getLine() + "\n");
+            }
+            writer.write("----------------------------------------------------------------------");
+            writer.close();
+        }
+    }
 
 
-        public void writeLog(Matchable m) throws  Exception{
+/*        public void writeLog(Matchable m) throws  Exception{
                 BufferedWriter writer = new BufferedWriter(new FileWriter(statementFileName + ".onassis", true));
                 String linePrefix = "";
                 switch (m.getState()) {
@@ -126,7 +150,7 @@ public class IOUtils {
                 }
                 writer.close();
         }
-    }
+    } '/
 
 
 
@@ -260,7 +284,24 @@ kulmiin?
         printOut(" Done.\n");
     }
     static int errorNro = 1;
-    static public void dumpErrorFile(String baseFileName, Exception e, Matchable m) throws IOException {
+
+       static public void dumpErrorFile(String baseFileName, Exception e, Receipt receipt) throws IOException {
+        String fileName = baseFileName + ".error." + (errorNro++) + ".debug";
+        printOut("Writing " + fileName + " ..");
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+        writer.write(e + "\n");
+        writer.write("-------------------------------------\n");
+        for(Line l : receipt.getLines()) {
+            writer.write(l.getLine() + "\n");
+        }
+        writer.write("-------------------------------------\n");
+        writer.write(receipt + "\n");
+        writer.close();
+        printOut(" Done.\n");
+    }
+
+
+    /*static public void dumpErrorFile(String baseFileName, Exception e, Matchable m) throws IOException {
         String fileName = baseFileName + ".error." + (errorNro++) + ".debug";
         printOut("Writing " + fileName + " ..");
         BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
@@ -297,14 +338,14 @@ kulmiin?
             }
             return State.MATCH_FOUND;
         }
-    }
+    } */
 
     static public State pickMatch(Receipt receipt) {
         showLines(receipt.getLines().stream().map(l -> {return l.getLine(); }).collect(Collectors.toList()), ""+receipt.lineNr+":"+" Receipt " + receipt.getAmount());
         List<PInfo> rows = new ArrayList<>(receipt.getCandidates());
         rows.add(receipt.asPinfo()); // or shall we create a new brave transaction?
         showP(rows);
-        String answer =  ask("Pick a Payment #, c to create new, s to skip, b to break ", "scb", 1, m.getPInfo().size());
+        String answer =  ask("Pick a Payment #, c to create new, s to skip, b to break ", "scb", 1,receipt.collectedValues.size());
         if(answer.equalsIgnoreCase("s")) {
             return State.SKIP;
         }
@@ -316,22 +357,23 @@ kulmiin?
         if(answer.equals(CREATE_KEY)) {
             return State.CREATE;
         } else {
-            PInfo pInfo = m.getPInfo().get(Integer.parseInt(answer) - 1);
+            //clear otherCandidates and return only the chosen one
+            PInfo chosenCandidate = rows.get(Integer.parseInt(answer) - 1);
+            receipt.getCandidates().clear();
+            receipt.getCandidates().add(chosenCandidate);
 
-            m.setTheChosenP(pInfo);
-
-            if (pInfo.isLocked()) {
+            if (chosenCandidate.isLocked()) {
                 return State.MATCH_FOUND_ALREADY_LOCKED;
             }
             return State.MATCH_FOUND;
         }
     }
-    static String pickDescription(String defaultDesc) {
+    static String pickDescription() {
         String answer = ask("Give description or 'x' to accept :", "x", null,null, true);
-        if(!answer.equalsIgnoreCase("x")) {
+        /*if(!answer.equalsIgnoreCase("x")) {
             return answer.replaceAll("\n", " ").replaceAll("\t", " ");
-        }
-        return defaultDesc;
+        }*/
+        return answer;
     }
     /*
     public void printC(List<C> categories) {

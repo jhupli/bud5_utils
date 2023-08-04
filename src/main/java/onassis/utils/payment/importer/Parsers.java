@@ -1,5 +1,6 @@
 package onassis.utils.payment.importer;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
 import onassis.utils.payment.synchronizer.parsers.Parser;
 
@@ -32,6 +33,10 @@ public class Parsers {
         public String name;
         public PartialParser partialParser;
 
+        @Getter
+        public static String groupId;
+        @Getter
+        public static String groupName;
 
         Target(String regexpName, String name, PartialParser partialParser) {
             this.regexpName = regexpName;
@@ -54,6 +59,8 @@ public class Parsers {
     public static PostProcessor PostProcessors;
     public static final PartialParserMap parsers = new PartialParserMap();
     public static final Map<Target, String> defaultValues = new HashMap<>();
+    @Getter
+    public static String groupId;
 
     @SneakyThrows
     public static void init(String bank) {
