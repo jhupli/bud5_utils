@@ -15,17 +15,18 @@ public class Main {
 
     @SneakyThrows
     public static void main(String[] args) {
-        if (args.length != 3) {
-            System.err.println("Usage: java -jar OnassisUtils.jar 1.0 <bank-name> <file of account-statement>");
+        if (args.length != 2) {
+            System.err.println("Usage: java -jar OnassisUtils.jar <bank-name> <file of account-statement>");
             System.exit(2);
         }
 
-        String bankName = args[1];
-        String statementsFile = args[2];
+        String bankName = args[0];
+        String statementsFile = args[1];
 
         ioUtils = new IOUtils(statementsFile);
         IOUtils.muteLoggers();
         RestIO.init(bankName);
+        RestIO.login();
         Parsers.init(bankName);
         PostProcessor.init(bankName);
 
@@ -33,12 +34,7 @@ public class Main {
         IOUtils.dump(args[1]+".after_read", receipts);
         receipts.stream().forEach(receipt -> receipt.parse());
         IOUtils.dump(args[1]+".after_parse", receipts);
-
-
-
-
         System.exit(0);
-
 
         /*
 

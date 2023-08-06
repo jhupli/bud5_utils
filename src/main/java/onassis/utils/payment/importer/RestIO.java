@@ -117,10 +117,10 @@ public class RestIO {
         }
     }
     static boolean login() {
-        pw = onassis.utils.payment.synchronizer.parsers.IOUtils.login();
+        pw = IOUtils.login();
         String catUrl = "http://" + host + "/cat/list";
         String accUrl = "http://" + host + "/acc/list";
-        onassis.utils.payment.synchronizer.parsers.IOUtils.printOut("Loggin in ...");
+        printOut("Loggin in ...");
 
         try {
             String responseJson =
@@ -130,7 +130,7 @@ public class RestIO {
             categories = categories_.stream().filter(c -> c.getActive()).collect(Collectors.toList());
         } catch (Exception e) {
             System.out.println(e);
-            onassis.utils.payment.synchronizer.parsers.IOUtils.printOut(" Failed. Category not found.\n");
+            printOut(" Failed. Category not found.\n");
             System.exit(3);
         }
 
@@ -148,7 +148,7 @@ public class RestIO {
             System.exit(2);
         }
 
-        onassis.utils.payment.synchronizer.parsers.IOUtils.printOut(" Done.\n");
+        printOut(" Done.\n");
         return categories != null;
     }
 

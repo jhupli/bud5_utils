@@ -2,7 +2,7 @@ package onassis.utils.payment.importer;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import onassis.utils.payment.synchronizer.parsers.Parser;
+
 
 import java.io.FileReader;
 import java.lang.reflect.Array;
@@ -15,17 +15,18 @@ import java.util.stream.Stream;
 
 public class Parsers {
     public enum Target {
-        BEGIN("begin_rexp", "", new PartialParser()),
-        DAY("day_rexp", "Day", new PartialParser00Num()),
-        MONTH("month_rexp", "Month", new PartialParser00Num()),
-        YEAR("year_rexp", "Year", new PartialParser()),
-        WHOLE("whole_rexp", "Whole", new PartialParserWhole()),
-        DECIMAL("decim_rexp", "Decimal", new PartialParserDecimal()),
-        SKIP("skip_rexp", "", new PartialParser()),
-        UNARY("unary_rexp", "Unary", new PartialParser()),
-        DESCR("descr_rexp", "Description", new PartialParser()),
-        CATEGORY("", "Category id", new PartialParser()),
-        CATEGORY_NAME("", "Category", new PartialParser()),
+        BEGIN("begin_rexp", "", new PartialParser(), true),
+        DAY("day_rexp", "Day", new PartialParser00Num(), true),
+        MONTH("month_rexp", "Month", new PartialParser00Num(), true),
+        YEAR("year_rexp", "Year", new PartialParser(), true),
+        WHOLE("whole_rexp", "Whole", new PartialParserWhole(), true),
+        DECIMAL("decim_rexp", "Decimal", new PartialParserDecimal(), true),
+        DESCR("descr_rexp", "Description", new PartialParser(), true),
+
+        SKIP("skip_rexp", "", new PartialParser(), false),
+        UNARY("unary_rexp", "Unary", new PartialParser(), false),
+        CATEGORY("", "Category id", new PartialParser(), false),
+        CATEGORY_NAME("", "Category", new PartialParser(), false),
         ;
 
         static public final Target [] parseableTargets = new Target[] { DAY, MONTH, YEAR, WHOLE, DECIMAL, SKIP, UNARY, DESCR, };
@@ -33,15 +34,17 @@ public class Parsers {
         public String name;
         public PartialParser partialParser;
 
+        public boolean mandatory;
         @Getter
         public static String groupId;
         @Getter
         public static String groupName;
 
-        Target(String regexpName, String name, PartialParser partialParser) {
+        Target(String regexpName, String name, PartialParser partialParser, boolean mandatory) {
             this.regexpName = regexpName;
             this.name = name;
             this.partialParser = partialParser;
+            this.mandatory = mandatory;
         }
 
         public String match(int ix, String line) {
@@ -68,8 +71,8 @@ public class Parsers {
         String propFileName = String.format("regexps/%s.properties", bank);
         Properties _properties = new Properties();
         _properties.load(new FileReader(propFileName));
-        Target.stream()
-              .forEach(t -> parsers.put(t, t.partialParser.init(_properties.getStringArray(t.regexpName))));
+        Parsers.Target.stream().forEach(p -> parsers.put(p, p.partialParser.init(_properties.getStringArray(p.regexpName, p.mandatory))));
+
         if (null == parsers.get(Target.BEGIN)) {
             throw new IllegalArgumentException("Empty regexps!");
         }

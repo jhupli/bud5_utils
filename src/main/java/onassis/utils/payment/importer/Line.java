@@ -43,10 +43,10 @@ public class Line  {
         public String toString() {
             String indent = onassis.utils.payment.synchronizer.parsers.IOUtils.indent();
             return indent + "Meta {" +
-                    indent + "target=" + target +
-                    indent + "regexp=" + regexp +
-                    indent + "regexp_index=" + regexp_index +
-                    indent + "value='" + value + '\'' +
+                    indent + "  target=" + target +
+                    indent + "  regexp=" + regexp +
+                    indent + "  regexp_index=" + regexp_index +
+                    indent + "  value='" + value + '\'' +
                     indent + "}";
         }
     }
@@ -71,8 +71,8 @@ public class Line  {
     public String toString() {
         String indent = IOUtils.indent();
         return  indent + "Line {" +
-                indent +  "line=" + line +
-                indent + "meta=" + meta +
+                indent + "  line=" + line +
+                indent + "  meta=" + meta +
                 indent +"} Line";
     }
 }

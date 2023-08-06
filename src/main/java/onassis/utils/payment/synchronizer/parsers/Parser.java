@@ -168,8 +168,8 @@ public class Parser {
     public String toString() {
         String indent = IOUtils.indent();
         return  indent + "Parser {" +
-                indent + "matchables=" + matchables +
-                indent + "blackList=" + blackList +
+                indent + "  matchables=" + matchables +
+                indent + "  blackList=" + blackList +
                 indent + "} Parser";
     }
 }

@@ -53,7 +53,7 @@ public class IOUtils {
         scan = new Scanner(new File(statementFileName));
         // check that there is not already logfile
         isOnassisFileReadOnly(statementFileName);
-        if(!scan.hasNext()) {
+        while(scan.hasNext()) {
             statementLines.add(scan.nextLine());
         }
         printOut(statementFileName + " read.\n");

@@ -57,11 +57,11 @@ public class Receipt {
     public String toString() {
         String indent = IOUtils.indent();
         return  indent + "Receipt {" +
-                indent + "collectedValues=" + collectedValues +
-                indent + "url=" + url +
-                indent + "lines=" + lines +
-                indent + "chosenC=" + chosenCategory +
-                indent + "description=" + description +
+                indent + "  collectedValues=" + collectedValues +
+                indent + "  url=" + url +
+                indent + "  lines=" + lines +
+                indent + "  chosenC=" + chosenCategory +
+                indent + "  description=" + description +
                 indent + "} Receipt";
     }
 
