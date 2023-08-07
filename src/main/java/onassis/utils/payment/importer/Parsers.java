@@ -18,7 +18,7 @@ public class Parsers {
         BEGIN("begin_rexp", "", new PartialParser(), true),
         DAY("day_rexp", "Day", new PartialParser00Num(), true),
         MONTH("month_rexp", "Month", new PartialParser00Num(), true),
-        YEAR("year_rexp", "Year", new PartialParser(), true),
+        YEAR("year_rexp", "Year", new PartialParser2DigitYear(), true),
         WHOLE("whole_rexp", "Whole", new PartialParserWhole(), true),
         DECIMAL("decim_rexp", "Decimal", new PartialParserDecimal(), true),
         DESCR("descr_rexp", "Description", new PartialParser(), true),
