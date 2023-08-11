@@ -60,8 +60,9 @@ public class Receipt {
                 indent + "  collectedValues=" + collectedValues +
                 indent + "  url=" + url +
                 indent + "  lines=" + lines +
-                indent + "  chosenC=" + chosenCategory +
+                indent + "  candidates=" + candidates +
                 indent + "  description=" + description +
+                indent + "  state=" + state +
                 indent + "} Receipt";
     }
 
