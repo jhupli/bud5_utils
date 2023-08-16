@@ -48,15 +48,18 @@ public class PartialParser {
         }
         return match(row, text);
     }
-    
+
     public String match(int row, String text) {
         if(row >= this.patterns.size()) {
             return null;
         }
         Pattern p = this.patterns.get(row);
         Matcher matcher = p.matcher(text);
-        if (matcher.find()) {
-            return format(matcher.group(1));
+        if (matcher.matches()) {
+            String value = matcher.group(1);
+            if(null != value) {
+                return format(matcher.group(1));
+            }
         }
         return null;
     }
@@ -65,7 +68,7 @@ public class PartialParser {
         int i=0;
         for(Pattern p : this.patterns) {
             Matcher matcher = p.matcher(text);
-            if (matcher.find()) {
+            if (matcher.matches()) {
                 return format(matcher.group(1));
             }
         }

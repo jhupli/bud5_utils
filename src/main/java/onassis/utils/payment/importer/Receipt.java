@@ -111,7 +111,7 @@ public class Receipt {
             return original;
         } else {
             description = (null == original ? "" : ": " + original);
-            collectedValues.put(DESCR, postProcessor.descr + original); // "sample" -> "Tag: sample"
+            collectedValues.put(DESCR, postProcessor.descr + description); // "sample" -> "Tag: sample"
             collectedValues.put(CATEGORY, "" + postProcessor.category);
             collectedValues.put(CATEGORY_NAME, "" + RestIO.getCategoryName(postProcessor.category));
             return collectedValues.get(DESCR);
