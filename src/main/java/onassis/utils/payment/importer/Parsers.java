@@ -15,16 +15,16 @@ import java.util.stream.Stream;
 
 public class Parsers {
     public enum Target {
-        BEGIN("begin_rexp", "", new PartialParser(), true),
-        DAY("day_rexp", "Day", new PartialParser00Num(), true),
-        MONTH("month_rexp", "Month", new PartialParser00Num(), true),
-        YEAR("year_rexp", "Year", new PartialParser2DigitYear(), true),
-        WHOLE("whole_rexp", "Whole", new PartialParserWhole(), true),
-        DECIMAL("decim_rexp", "Decimal", new PartialParserDecimal(), true),
-        DESCR("descr_rexp", "Description", new PartialParser(), true),
+        BEGIN("begin", "", new PartialParser(), true),
+        DAY("day", "Day", new PartialParser00Num(), true),
+        MONTH("month", "Month", new PartialParser00Num(), true),
+        YEAR("year", "Year", new PartialParser2DigitYear(), true),
+        WHOLE("whole", "Whole", new PartialParserWhole(), true),
+        DECIMAL("decim", "Decimal", new PartialParserDecimal(), true),
+        DESCR("descr", "Description", new PartialParser(), true),
 
-        SKIP("skip_rexp", "", new PartialParser(), false),
-        UNARY("unary_rexp", "Unary", new PartialParser(), false),
+        SKIP("skip", "", new PartialParser(), false),
+        UNARY("unary", "Unary", new PartialParser(), false),
         CATEGORY("", "Category id", new PartialParser(), false),
         CATEGORY_NAME("", "Category", new PartialParser(), false),
         ;
@@ -71,7 +71,7 @@ public class Parsers {
         String propFileName = String.format("regexps/%s.properties", bank);
         Properties _properties = new Properties();
         _properties.load(new FileReader(propFileName));
-        Parsers.Target.stream().forEach(p -> parsers.put(p, p.partialParser.init(_properties.getStringArray(p.regexpName, p.mandatory))));
+        Parsers.Target.stream().forEach(p -> parsers.put(p, p.partialParser.init(_properties.getStringArray(p.regexpName+ "_rexp", p.mandatory))));
 
         if (null == parsers.get(Target.BEGIN)) {
             throw new IllegalArgumentException("Empty regexps!");

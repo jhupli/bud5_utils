@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import onassis.utils.payment.importer.Parsers.Target;
 
 import static onassis.utils.payment.importer.Parsers.Target.*;
+import static onassis.utils.payment.importer.Receipt.State.ALL_ATTRS_FOUND;
 import static onassis.utils.payment.importer.Receipt.State.ATTRS_NOT_FOUND;
 
 public class Receipt {
@@ -46,10 +47,6 @@ public class Receipt {
 
     @Getter
     @Setter
-    String description = "";
-
-    @Getter
-    @Setter
     List<PInfo> candidates = null;
 
     PostProcessor postProcessor = null;
@@ -61,7 +58,6 @@ public class Receipt {
                 indent + "  url=" + url +
                 indent + "  lines=" + lines +
                 indent + "  candidates=" + candidates +
-                indent + "  description=" + description +
                 indent + "  state=" + state +
                 indent + "} Receipt";
     }
@@ -110,7 +106,7 @@ public class Receipt {
             collectedValues.put(DESCR, original);
             return original;
         } else {
-            description = (null == original ? "" : ": " + original);
+            String description = (null == original ? "" : ": " + original);
             collectedValues.put(DESCR, postProcessor.descr + description); // "sample" -> "Tag: sample"
             collectedValues.put(CATEGORY, "" + postProcessor.category);
             collectedValues.put(CATEGORY_NAME, "" + RestIO.getCategoryName(postProcessor.category));
@@ -163,6 +159,9 @@ public class Receipt {
                 continue;
             }
             collectedValues.put(t, Parsers.defaultValues.get(t));
+        }
+        if(haveItAll()) {
+            state = ALL_ATTRS_FOUND;
         }
     }
 

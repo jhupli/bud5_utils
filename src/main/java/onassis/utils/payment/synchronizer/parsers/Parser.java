@@ -42,10 +42,6 @@ public class Parser {
             this.mandatory = mandatory;
         }
 
-        public static int nrOfMandatories() {
-            return 6; //TODO
-        }
-
         public static Stream<Target> stream() {
             return Stream.of(Target.values());
         }
